@@ -1,0 +1,270 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<!-- 这个页面用来显示登陆用户所包含的customer的寄件和收件 -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>卓越快递</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="" />
+    <meta name="keywords" content="" />
+    <meta name="author" content="" />
+
+
+
+    <!-- Facebook and Twitter integration -->
+    <meta property="og:title" content=""/>
+    <meta property="og:image" content=""/>
+    <meta property="og:url" content=""/>
+    <meta property="og:site_name" content=""/>
+    <meta property="og:description" content=""/>
+    <meta name="twitter:title" content="" />
+    <meta name="twitter:image" content="" />
+    <meta name="twitter:url" content="" />
+    <meta name="twitter:card" content="" />
+
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Playfair+Display:400,400i" rel="stylesheet">
+
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="css/animate.css">
+    <!-- Icomoon Icon Fonts-->
+    <link rel="stylesheet" href="css/icomoon.css">
+    <!-- Bootstrap  -->
+    <link rel="stylesheet" href="css/bootstrap.css">
+
+    <!-- Flexslider  -->
+    <link rel="stylesheet" href="css/flexslider.css">
+
+    <!-- Owl Carousel  -->
+    <link rel="stylesheet" href="css/owl.carousel.min.css">
+    <link rel="stylesheet" href="css/owl.theme.default.min.css">
+
+    <!-- Theme style  -->
+    <link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/table.css">
+    <!-- Modernizr JS -->
+    <script src="js/modernizr-2.6.2.min.js"></script>
+    <!-- FOR IE9 below -->
+    <!--[if lt IE 9]>
+    <script src="js/respond.min.js"></script>
+    <![endif]-->
+    <script type="text/javascript" src="https://bot.4paradigm.com/web/assets/ics-web-sdk-js.js"></script>
+    <script>
+        window.onload = function () {
+            IcsWebSdkJs.init('https://bot.4paradigm.com/web/chat/21534/d29ae7d1-6025-4244-abc9-f87b65ea16ed'); // 初始化组件, url为体验机器人的URL
+        }
+    </script>
+<script type="text/javascript" src="lib/jquery/jquery.min.js"></script>
+<script type="text/javascript">
+var clientName;
+var expressId;
+$(document).ready(function requestData(){
+	if($.cookie('client_name')!=null){
+		clientName=$.cookie('client_name');
+		$("#denglu").html(clientName+",今天也要加油呀"); 
+	}
+	if($.cookie('express_id')!=null){
+		expressId=$.cookie('express_id');
+	}
+    $.ajax({
+        url: "http://39.99.212.164:8080/TestCxfHibernate/REST/Domain/getExpressSheet/"+expressId,
+        type: "get",
+        dataType: "json",
+        success: function(data){
+            /*这个方法里是ajax发送请求成功之后执行的代码*/
+            showData(data);
+        },
+        error: function(msg){
+            alert("ajax连接异常："+msg);
+        }
+    });
+});
+
+
+//把ajax传过来的数据展示出来
+function showData(data) {
+        $("#expressId").html(data.ID);
+        $("#name1").html(data.sender.name);
+        $("#name2").html(data.recever.name);
+        $("#telCode1").html(data.sender.telCode);
+        $("#telCode2").html(data.recever.telCode);
+        $("#address1").html(data.sender.address);
+        $("#address2").html(data.recever.address);
+        switch(data.type){
+        case 0:$("#type").html("文件");break;
+        case 1:$("#type").html("数码产品");break;
+        case 2:$("#type").html("生活用品");break;
+        case 3:$("#type").html("服饰");break;
+        case 4:$("#type").html("食品");break;
+        default:$("#type").html("其它");
+        }
+        $("#weight").html(data.weight);
+        //$("#weight").html(data.ID);
+        $("#time").html(new Date());
+        
+    }
+
+</script>
+
+</head>
+<body>
+
+<div class="fh5co-loader"></div>
+
+<div id="page">
+    <nav class="fh5co-nav" role="navigation">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3 col-xs-2">
+                    <div id="fh5co-logo"><img src="images/logo.png"><a href="index.html">卓越快递</a></div>
+
+                </div>
+                <div class="col-md-6 col-xs-6 text-center menu-1">
+                    <ul>
+                        <li class="has-dropdown">
+                            <a href="index.html">首页</a>
+                        </li>
+                        <li class="has-dropdown">
+                            <a href="#">订单查询</a>
+                            <ul class="dropdown">
+                                <li><a href="ExpressSheetQueryById.html">手机号查询订单</a></li>
+                                <li><a href="ExpressSheetQueryById.html">订单号查询订单</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="transNodeQuery.html">网点查询</a></li>
+                        <li><a href="delivery.html">预约寄件</a></li>
+
+                    </ul>
+
+                </div>
+                <div class="col-md-3 col-xs-2">
+						<ul>
+							<li class="ml-xl-5 ml-lg-2 mt-lg-0 mt-sm-4 mt-3"><span id="denglu"><a
+								href="login.html" class="reqe-button">登录</a></span> </li>
+								<li class="has-dropdown"><a href="SelfCenter.html">个人中心</a>
+								<ul class="dropdown">
+									<li><a href="appointmentlist.html">我的预约</a></li>
+									<li><a href="expresssendlist.html">我的寄件</a></li>
+									<li><a href="expressreceivelist.html">我的收件</a></li>
+									<li><a href="addresslist.html">我的地址簿</a></li>
+									<li><a href="#">修改信息</a></li>
+									<li><a href="#">退出登录</a></li>
+								</ul></li>
+						</ul>
+
+					</div>
+
+            </div>
+
+        </div>
+    </nav>
+	<div align ="center" width="40%">
+            <div witdth="40%">
+               <div >
+                    <span align="center"> 订单详情</span>
+               </div>
+            </div>
+	</div>
+	<div class="container" >
+		<table class="cloudTable" style="text-align: center;" border="1" >
+			<tr>
+				<td width="60"><img src="images/logo.png"></td>
+				<th width="180"  style="text-align: center;">卓越快递</th>
+				<td width="60">订单号</td>
+				<td width="200"><span id="expressId"></span></td>				
+			</tr>
+			<tr>
+				<td colspan="2">寄件人信息</td>
+				<td colspan="2">收件人信息</td>
+			</tr>
+			<tr>
+				<td width="60">姓名</td>
+				<td width="180"><span id="name1"></span></td>
+				<td width="60">姓名</td>
+				<td width="200"><span id="name2"></span></td>	
+			</tr>
+			<tr>
+				<td width="60">联系方式</td>
+				<td width="180"><span id="telCode1"></span></td>
+				<td width="60">联系方式</td>
+				<td width="200"><span id="telCode2"></span></td>	
+			</tr>
+			<tr>
+				<td width="60">详细地址</td>
+				<td width="180"><span id="address1"></span></td>
+				<td width="60">详细地址</td>
+				<td width="200"><span id="address2"></span></td>	
+			</tr>
+			<tr><td colspan="4">货物信息</td></tr>
+			<tr>
+				<td width="60">快件类别</td>
+				<td width="180"><span id="type"></span></td>
+				<td width="60">快件重量</td>
+				<td width="200"><span id="weight"></span></td>	
+			</tr>
+			<tr>
+				<td width="60">创建时间</td>
+				<td colspan="3"><span id="time"></span></td>
+			</tr >
+			<tr rowspan="3">
+				<td width="60">备注</td>
+				<td colspan="3"><span id="remarks"></span></td>
+			</tr>
+		</table>
+	
+	</div>
+<div class="col-md-3 col-xs-2">
+	<a href="expresshistory.html">物流信息</a>
+</div>
+
+
+    <footer id="fh5co-footer" role="contentinfo">
+        <div class="container">
+
+
+            <div class="row copyright">
+                <div class="col-md-12 text-center">
+                    <p>
+                        <small class="block">项目独秀策划师</small>
+                    </p>
+                    <p>
+                    <ul class="fh5co-social-icons">
+                        <li><a href="#"><i class="icon-twitter"></i></a></li>
+                        <li><a href="#"><i class="icon-facebook"></i></a></li>
+                        <li><a href="#"><i class="icon-linkedin"></i></a></li>
+                        <li><a href="#"><i class="icon-dribbble"></i></a></li>
+                    </ul>
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </footer>
+</div>
+
+<div class="gototop js-top">
+    <a href="#" class="js-gotop"><i class="icon-arrow-up"></i></a>
+</div>
+
+<!-- jQuery -->
+<script src="js/jquery.min.js"></script>
+<!-- jQuery Easing -->
+<script src="js/jquery.easing.1.3.js"></script>
+<!-- Bootstrap -->
+<script src="js/bootstrap.min.js"></script>
+<!-- Waypoints -->
+<script src="js/jquery.waypoints.min.js"></script>
+<!-- Carousel -->
+<script src="js/owl.carousel.min.js"></script>
+<!-- countTo -->
+<script src="js/jquery.countTo.js"></script>
+<!-- Flexslider -->
+<script src="js/jquery.flexslider-min.js"></script>
+<!-- Main -->
+<script src="js/main.js"></script>
+
+    <script type="text/javascript" src="js/jquery.cookie.js"></script>
+</body>
+</html>
+

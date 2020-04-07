@@ -1,0 +1,343 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>卓越快递</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="" />
+<meta name="keywords" content="" />
+<meta name="author" content="" />
+
+
+
+<!-- Facebook and Twitter integration -->
+<meta property="og:title" content="" />
+<meta property="og:image" content="" />
+<meta property="og:url" content="" />
+<meta property="og:site_name" content="" />
+<meta property="og:description" content="" />
+<meta name="twitter:title" content="" />
+<meta name="twitter:image" content="" />
+<meta name="twitter:url" content="" />
+<meta name="twitter:card" content="" />
+
+<link href="https://fonts.googleapis.com/css?family=Montserrat:400,700"
+	rel="stylesheet">
+<link
+	href="https://fonts.googleapis.com/css?family=Playfair+Display:400,400i"
+	rel="stylesheet">
+
+<!-- Animate.css -->
+<link rel="stylesheet" href="css/animate.css">
+<!-- Icomoon Icon Fonts-->
+<link rel="stylesheet" href="css/icomoon.css">
+<!-- Bootstrap  -->
+<link rel="stylesheet" href="css/bootstrap.css">
+
+<!-- Flexslider  -->
+<link rel="stylesheet" href="css/flexslider.css">
+
+<!-- Owl Carousel  -->
+<link rel="stylesheet" href="css/owl.carousel.min.css">
+<link rel="stylesheet" href="css/owl.theme.default.min.css">
+
+<!-- Theme style  -->
+<link rel="stylesheet" href="css/style.css">
+
+<!-- Modernizr JS -->
+<script src="js/modernizr-2.6.2.min.js"></script>
+<!-- FOR IE9 below -->
+<!--[if lt IE 9]>
+	<script src="js/respond.min.js"></script>
+	<![endif]-->
+    <script type="text/javascript" src="https://bot.4paradigm.com/web/assets/ics-web-sdk-js.js"></script>
+    <script>
+        window.onload = function () {
+            IcsWebSdkJs.init('https://bot.4paradigm.com/web/chat/21534/d29ae7d1-6025-4244-abc9-f87b65ea16ed'); // 初始化组件, url为体验机器人的URL
+        }
+    </script>
+    <script type="text/javascript">
+    			function getSessionId(){
+    	            alert($.cookie("JSESSIONID"));
+    	        }
+    </script>
+    <script type="text/javascript" src="lib/jquery/jquery.min.js"></script>
+    <script type="text/javascript">
+    var telCode;
+    $(document).ready(function show(){
+    		if($.cookie('client_telCode')!=null){
+        		telCode=$.cookie('client_telCode');
+        		requestData();
+        		//alert(telCode);
+        	}else{
+        		//alert("空");
+        	}
+    	});
+    	function requestData(){
+    	    $.ajax({
+    	        url: "http://39.99.212.164:8080/TestCxfHibernate/REST/Misc/login/"+telCode,
+    	        type: "get",
+    	        dataType: "json",
+    	        success: function(data){
+    	            /*这个方法里是ajax发送请求成功之后执行的代码*/
+    	            showData(data);
+    	        },
+    	        error: function(msg){
+    	            alert("ajax连接异常："+msg);
+    	        }
+    	    });
+    	}
+    	function showData(data) {
+            $("#denglu").html(data.cname+",今天也要加油呀"); 
+            $.cookie('client_id', data.cid,{ path: '/' });
+            $.cookie('client_name', data.cname,{ path: '/' });
+        }
+    </script>
+</head>
+<body>
+
+	<div class="fh5co-loader"></div>
+	<div id="page">
+		<nav class="fh5co-nav" role="navigation">
+			<div class="container">
+			
+				<div class="row">
+					<div class="col-md-3 col-xs-2">
+						<div id="fh5co-logo">
+							<img src="images/logo.png"><a href="index.html">卓越快递</a>
+						</div>
+
+					</div>
+					<div class="col-md-6 col-xs-6 text-center menu-1">
+						<ul>
+							<li class="has-dropdown"><a href="index.html">首页</a></li>
+							<li class="has-dropdown"><a href="ExpressSheetQueryById.html">订单查询</a>
+								<ul class="dropdown">
+									<li><a href="ExpressSheetQueryBytel.html">手机号查询订单</a></li>
+									<li><a href="ExpressSheetQueryById.html">订单号查询订单</a></li>
+								</ul></li>
+							<li><a href="transNodeQuery.html">网点查询</a></li>
+							<li><a href="delivery.html">预约寄件</a></li>
+
+						</ul>
+
+					</div>
+					<div class="col-md-3 col-xs-2">
+						<ul>
+							<li class="ml-xl-5 ml-lg-2 mt-lg-0 mt-sm-4 mt-3"><span id="denglu"><a
+								href="login.html" class="reqe-button">登录</a></span> </li>
+								<li class="has-dropdown"><a href="SelfCenter.html">个人中心</a>
+								<ul class="dropdown">
+									<li><a href="appointmentlist.html">我的预约</a></li>
+									<li><a href="expresssendlist.html">我的寄件</a></li>
+									<li><a href="expressreceivelist.html">我的收件</a></li>
+									<li><a href="addresslist.html">我的地址簿</a></li>
+									<li><a href="#">修改信息</a></li>
+									<li><a href="#">退出登录</a></li>
+								</ul></li>
+						</ul>
+
+					</div>
+
+				</div>
+
+			</div>
+		</nav>
+		<div id="fh5co-counter" class="fh5co-bg fh5co-counter"
+			style="background-image: url(images/img_bg_5.jpg);">
+			<div class="container">
+				<div class="row">
+					<div class="display-t">
+						<div class="display-tc">
+							<div class="col-md-3 col-sm-6 animate-box">
+								<div class="feature-center">
+									<span class="icon"> <i class="icon-eye"></i>
+									</span> <span class="counter js-counter" data-from="0" data-to="22070"
+										data-speed="5000" data-refresh-interval="50">1</span> <span
+										class="counter-label">寄出快递</span>
+
+								</div>
+							</div>
+							<div class="col-md-3 col-sm-6 animate-box">
+								<div class="feature-center">
+									<span class="icon"> <i class="icon-login"></i>
+									</span> <span class="counter js-counter" data-from="0" data-to="450"
+										data-speed="5000" data-refresh-interval="50">1</span> <span
+										class="counter-label">用户人数</span>
+								</div>
+							</div>
+							<div class="col-md-3 col-sm-6 animate-box">
+								<div class="feature-center">
+									<span class="icon"> <i class="icon-shop"></i>
+									</span> <span class="counter js-counter" data-from="0" data-to="700"
+										data-speed="5000" data-refresh-interval="50">1</span> <span
+										class="counter-label">网点数量</span>
+								</div>
+							</div>
+							<div class="col-md-3 col-sm-6 animate-box">
+								<div class="feature-center">
+									<span class="icon"> <i class="icon-clock"></i>
+									</span> <span class="counter js-counter" data-from="0" data-to="1000"
+										data-speed="5000" data-refresh-interval="50">1</span> <span
+										class="counter-label">成立时间</span>
+
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div id="fh5co-services" class="fh5co-bg-section">
+			<div class="container">
+				<div class="row">
+					<div class="col-md-4 col-sm-4 text-center">
+						<div class="feature-center animate-box"
+							data-animate-effect="fadeIn">
+							<span class="icon"> <i class="icon-paper-plane"></i>
+							</span>
+							<h3>预约寄件</h3>
+							<p>
+								<a href="delivery.html" class="btn btn-primary btn-outline">开始寄件</a>
+							</p>
+						</div>
+					</div>
+					<div class="col-md-4 col-sm-4 text-center">
+						<div class="feature-center animate-box"
+							data-animate-effect="fadeIn">
+							<span class="icon"> <i class="icon-wallet"></i>
+							</span>
+							<h3>订单查询</h3>
+							<p>
+								<a href="#" class="btn btn-primary btn-outline">开始查询</a>
+							</p>
+						</div>
+					</div>
+					<div class="col-md-4 col-sm-4 text-center">
+						<div class="feature-center animate-box"
+							data-animate-effect="fadeIn">
+							<span class="icon"> <i class="icon-credit-card"></i>
+							</span>
+							<h3>网点查询</h3>
+							<p>
+								<a href="#" class="btn btn-primary btn-outline">开始查询</a>
+							</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div id="fh5co-testimonial" class="fh5co-bg-section">
+			<div class="container">
+				<div class="row animate-box">
+					<div class="col-md-8 col-md-offset-2 text-center fh5co-heading">
+						<h2>客户反馈</h2>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-10 col-md-offset-1">
+						<div class="row animate-box">
+							<div class="owl-carousel owl-carousel-fullwidth">
+								<div class="item">
+									<div class="testimony-slide active text-center">
+										<figure>
+											<img src="images/person1.jpg" alt="user">
+										</figure>
+										<span>Jean Doe, via <a href="#" class="twitter">Twitter</a></span>
+										<blockquote>
+											<p>&ldquo;Far far away, behind the word mountains, far
+												from the countries Vokalia and Consonantia, there live the
+												blind texts. Separated they live in Bookmarksgrove right at
+												the coast of the Semantics, a large language ocean.&rdquo;</p>
+										</blockquote>
+									</div>
+								</div>
+								<div class="item">
+									<div class="testimony-slide active text-center">
+										<figure>
+											<img src="images/person2.jpg" alt="user">
+										</figure>
+										<span>John Doe, via <a href="#" class="twitter">Twitter</a></span>
+										<blockquote>
+											<p>&ldquo;Separated they live in Bookmarksgrove right at
+												the coast of the Semantics, a large language ocean.&rdquo;</p>
+										</blockquote>
+									</div>
+								</div>
+								<div class="item">
+									<div class="testimony-slide active text-center">
+										<figure>
+											<img src="images/person3.jpg" alt="user">
+										</figure>
+										<span>John Doe, via <a href="#" class="twitter">Twitter</a></span>
+										<blockquote>
+											<p>&ldquo;Far from the countries Vokalia and Consonantia,
+												there live the blind texts. Separated they live in
+												Bookmarksgrove right at the coast of the Semantics, a large
+												language ocean.&rdquo;</p>
+										</blockquote>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+
+
+
+		<footer id="fh5co-footer" role="contentinfo">
+			<div class="container">
+
+
+				<div class="row copyright">
+					<div class="col-md-12 text-center">
+						<p>
+							<small class="block">项目独秀策划师</small>
+						</p>
+						<p>
+						<ul class="fh5co-social-icons">
+							<li><a href="#"><i class="icon-twitter"></i></a></li>
+							<li><a href="#"><i class="icon-facebook"></i></a></li>
+							<li><a href="#"><i class="icon-linkedin"></i></a></li>
+							<li><a href="#"><i class="icon-dribbble"></i></a></li>
+						</ul>
+						</p>
+					</div>
+				</div>
+
+			</div>
+		</footer>
+	</div>
+
+	<div class="gototop js-top">
+		<a href="#" class="js-gotop"><i class="icon-arrow-up"></i></a>
+	</div>
+
+	<!-- jQuery -->
+	<script src="js/jquery.min.js"></script>
+	<!-- jQuery Easing -->
+	<script src="js/jquery.easing.1.3.js"></script>
+	<!-- Bootstrap -->
+	<script src="js/bootstrap.min.js"></script>
+	<!-- Waypoints -->
+	<script src="js/jquery.waypoints.min.js"></script>
+	<!-- Carousel -->
+	<script src="js/owl.carousel.min.js"></script>
+	<!-- countTo -->
+	<script src="js/jquery.countTo.js"></script>
+	<!-- Flexslider -->
+	<script src="js/jquery.flexslider-min.js"></script>
+	<!-- Main -->
+	<script src="js/main.js"></script>
+
+    <script type="text/javascript" src="js/jquery.cookie.js"></script> 
+</body>
+</html>
+

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <style type="text/css">
+        body, html,#allmap {width: 100%;height: 100%;overflow: hidden;margin:0;font-family:"微软雅黑";}
+        		.button {
+		    margin: 5px;
+		    padding: 13px 23px;
+		    border-radius: 10px;
+		    box-shadow: 0 3px 14px rgba(0, 0, 0, 0.4);
+		    font: 16px/14px Tahoma, Verdana, sans-serif;
+		    text-align: center;
+		    color: #fefefe;
+		    background: #1e90ff;
+		}
+		#control {
+		    position: absolute;
+		    bottom: 15px;
+		}
+    </style>
+    <script type="text/javascript" src="//api.map.baidu.com/api?v=2.0&ak=EVoc0bBxgyFOczSlcDny77FfAFujgjBp"></script>
+    <title>城市列表控件</title>
+    	<script src="//libs.baidu.com/jquery/1.9.0/jquery.js"></script>
+	<script async src="http://c.cnzz.com/core.php"></script>
+</head>
+<body>
+    <div id="allmap"></div>
+    		<div id="control">
+	    <div >
+	    	<input type="button" onclick="show()" class="button" value="显示附近网点">
+	    </div>
+	</div>
+</body>
+</html>
+<script type="text/javascript">
+	var mp = new BMap.Map("allmap");
+	var point = new BMap.Point(116.404, 39.915);
+	mp.centerAndZoom(point, 14);
+	mp.enableScrollWheelZoom();
+	mp.enableInertialDragging();
+	
+	mp.enableContinuousZoom();
+	
+	var size = new BMap.Size(10, 20);
+	mp.addControl(new BMap.CityListControl({
+	    anchor: BMAP_ANCHOR_TOP_LEFT,
+	    offset: size,
+	    // 切换城市之前事件
+	    // onChangeBefore: function(){
+	    //    alert('before');
+	    // },
+	    // 切换城市之后事件
+	    // onChangeAfter:function(){
+	    //   alert('after');
+	    // }
+	}));
+/*function show(){
+	//添加网点
+	var icon = new BMap.Icon('images/logo.png', new BMap.Size(40, 64), {
+	    anchor: new BMap.Size(20, 34)
+	});
+	
+	var mkr =new BMap.Marker(new BMap.Point(113.69857,34.73569), {
+	    icon: icon
+	});
+	mp.addOverlay(mkr);
+	//添加网点
+	var icon = new BMap.Icon('images/logo.png', new BMap.Size(40, 64), {
+	    anchor: new BMap.Size(20, 34)
+	});
+	
+	var mkr =new BMap.Marker(new BMap.Point(113.63145,34.74324), {
+	    icon: icon
+	});
+	mp.addOverlay(mkr);
+	//添加网点
+	var icon = new BMap.Icon('images/logo.png', new BMap.Size(40, 64), {
+	    anchor: new BMap.Size(20, 34)
+	});
+	
+	var mkr =new BMap.Marker(new BMap.Point(112.47241,34.55648), {
+	    icon: icon
+	});
+	mp.addOverlay(mkr);
+	//添加网点
+	var icon = new BMap.Icon('images/logo.png', new BMap.Size(40, 64), {
+	    anchor: new BMap.Size(20, 34)
+	});
+	
+	var mkr =new BMap.Marker(new BMap.Point(112.46697,34.65682), {
+	    icon: icon
+	});
+	mp.addOverlay(mkr);
+	//添加网点
+	var icon = new BMap.Icon('images/logo.png', new BMap.Size(40, 64), {
+	    anchor: new BMap.Size(20, 34)
+	});
+	
+	var mkr =new BMap.Marker(new BMap.Point(116.32128,39.89534), {
+	    icon: icon
+	});
+	mp.addOverlay(mkr);
+}*/
+		var data_info = [[113.69857,34.73569,"地址：网点1"],
+			 [113.63145,34.74324,"地址：网点2"],
+			 [112.47241,34.55648,"地址：网点3"],
+			 [112.46697,34.65682,"地址：网点4"],
+			 [116.32128,39.89534,"地址：网点5"],
+			 [116.412222,39.912345,"地址：网点6"]
+			];
+		var opts = {
+			width : 250,     // 信息窗口宽度
+			height: 80,     // 信息窗口高度
+			title : "信息窗口" , // 信息窗口标题
+			enableMessage:true//设置允许信息窗发送短息
+		  };
+		
+		var icon = new BMap.Icon('images/logo.png', new BMap.Size(40, 64), {
+			anchor: new BMap.Size(20, 34)
+		});
+		function show(){
+			for(var i=0;i<data_info.length;i++){
+				var marker = new BMap.Marker(new BMap.Point(data_info[i][0],data_info[i][1]),{
+					icon:icon
+				});  // 创建标注
+				var content = data_info[i][2];
+				mp.addOverlay(marker);               // 将标注添加到地图中
+				addClickHandler(content,marker);
+			}	
+		}
+		function addClickHandler(content,marker){
+		marker.addEventListener("click",function(e){
+		openInfo(content,e)}
+		);
+		}
+		function openInfo(content,e){
+		var p = e.target;
+		var point = new BMap.Point(p.getPosition().lng, p.getPosition().lat);
+		var infoWindow = new BMap.InfoWindow(content,opts);  // 创建信息窗口对象 
+		mp.openInfoWindow(infoWindow,point); //开启信息窗口
+		}
+</script>

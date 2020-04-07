@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+    <script type="text/javascript" src="lib/jquery/jquery.min.js"></script>
+	<script type="text/javascript">
+	$(document).ready(function requestData(){
+        var str = "";//定义用于拼接的字符串
+
+		str = "<tr><td>" + 0 + "</td><td>" + 0 + "</td><td>" + 0 +"</td><td>" +  0 +"</td></tr>";
+        //追加到table中
+        $("#appointmentlist").append(str);  
+        str = "<tr><td>" + 0 + "</td><td>" + 0 + "</td><td>" + 0 +"</td><td>" +  0 +"</td></tr>";
+        //追加到table中
+        $("#appointmentlist").append(str); 
+
+	});
+	</script>
+</head>
+<body>
+<div>
+
+	<span id="test">hahah</span>
+</div>
+	<div align ="center" width="40%">
+            <div witdth="40%">
+               <div >
+                    <span align="center" id="center"> 我的预约</span>
+               </div>
+
+            </div>
+	
+	</div>
+	 <div class="cloudMtxTable_body">
+		      <table id="appointmentlist" class="cloudTable"  style="table-layout:fixed">
+		        <colgroup>
+	 				<col width="60px">
+			        <col width="250px">
+			        <col width="250px">
+			        <col width="90px">
+		        </colgroup>
+		        <thead class="cloudTable_header">
+		        <tr>
+		          <th style="text-align:center;">预约单号</th>
+		          <th style="text-align:center;">收件人信息</th>
+		          <th style="text-align:center;">寄件人信息</th>
+		          <th style="text-align:center;">预约状态</th>
+		        </tr>
+		      </thead>
+		        <tbody class="cloudTable_body ">
+		          <tr>
+		            <td><span id="expressId"></span></td>
+		            <td><span id="sender"></span></td>
+		            <td><span id="receiver"></span></td>
+		            <td><span id="status"></span></td>
+		          </tr>
+		          
+		
+		        </tbody>
+		
+		      </table>
+    	</div>
+</body>
+</html>
