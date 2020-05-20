@@ -88,15 +88,49 @@ function showData(data) {
         var str = "";//定义用于拼接的字符串
         for (var i = 0; i < data.length; i++) {
             //拼接表格的行和列
-            str = "<tr><td>" + data[i].ID + 
-            "</td><td>" + data[i].sender.name+data[i].sender.telCode + 
+        	var status;
+            switch(data[i].status){
+	            case 0:status="等待揽收";break;
+	            case 1:status="已揽收";break;
+	            case 2:status="运输中";break;
+	            case 3:status="等待派送";break;
+	            case 4:status="派送中";break;
+	            case 5:status="已签收";break;
+	            default :status="未更新请等待";
+            }
+            str = "<tr><td><a onclick='showInformation("+data[i].ID+")'>" + data[i].ID + 
+            "</a></td><td>" + data[i].sender.name+data[i].sender.telCode + 
             "</td><td>" + data[i].recever.name+data[i].recever.telCode +
-            "</td><td>" + data[i].type +"</td><td>" + data[i].status +
+            "</td><td>" + data[i].type +"</td><td>" + status +
             "</td></tr>";
             //追加到table中
             $("#expresslist").append(str);         }
     }
+function showInformation(expressId){
+	   		//alert(expressId);
+	   		$.cookie('express_id', expressId,{ path: '/' });
+	   		window.location.href="expressInformation.html";
+	   }
+function logout(){
+	
+	if($.cookie('client_name')==null){
+		alert("您未登录");		
+	}else{
+		var cookies = $.cookie();
+		for(var cookie in cookies) {
+			
+		   $.removeCookie(cookie,{path:"/"});
+		}
+		//$.removeCookie('client_name', { path:'/' });
 
+		//$.cookie('client_name', null, { path: '/' });
+
+		//$.removeCookie('client_name');
+		alert("已注销");
+		document.location.href="index.html";
+	}
+
+}
 </script>
 
 </head>
@@ -120,7 +154,7 @@ function showData(data) {
                         <li class="has-dropdown">
                             <a href="#">订单查询</a>
                             <ul class="dropdown">
-                                <li><a href="ExpressSheetQueryById.html">手机号查询订单</a></li>
+                                <li><a href="ExpressSheetQueryBytel.html">手机号查询订单</a></li>
                                 <li><a href="ExpressSheetQueryById.html">订单号查询订单</a></li>
                             </ul>
                         </li>
@@ -140,8 +174,8 @@ function showData(data) {
 									<li><a href="expresssendlist.html">我的寄件</a></li>
 									<li><a href="expressreceivelist.html">我的收件</a></li>
 									<li><a href="addresslist.html">我的地址簿</a></li>
-									<li><a href="#">修改信息</a></li>
-									<li><a href="#">退出登录</a></li>
+									<li><a href="modify.html">修改信息</a></li>
+									<li><a href="#" onclick="logout();">退出登录</a></li>
 								</ul></li>
 						</ul>
 

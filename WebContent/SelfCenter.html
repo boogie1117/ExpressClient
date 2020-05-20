@@ -64,12 +64,62 @@
           <script type="text/javascript" src="lib/jquery/jquery.min.js"></script>
     <script type="text/javascript">
     	var clientName;
+    	var clientId;
     	$(document).ready(function requestData(){
     		if($.cookie('client_name')!=null){
     			clientName=$.cookie('client_name');
+    			clientId=$.cookie('client_id');
     			$("#denglu").html(clientName+",今天也要加油呀"); 
     		}
     	});
+    	function logout(){
+    		
+    		if($.cookie('client_name')==null){
+				alert("您未登录");		
+			}else{
+				var cookies = $.cookie();
+	    		for(var cookie in cookies) {
+	    			
+	    		   $.removeCookie(cookie,{path:"/"});
+	    		}
+	    		//$.removeCookie('client_name', { path:'/' });
+	
+	    		//$.cookie('client_name', null, { path: '/' });
+	
+	    		//$.removeCookie('client_name');
+	    		alert("已注销");
+	    		document.location.href="index.html";
+			}
+ 
+    	}
+    	function deleteClient(){
+    		if($.cookie('client_name')==null){
+				alert("您未登录");		
+			}else{
+				
+	    		$.ajax({
+	    	        url: "http://39.99.212.164:8080/TestCxfHibernate/REST/Misc/deleteClient/"+clientId,
+	    	        type: "get",
+	    	        dataType: "json",
+	    	        success: function(){
+	    	           // alert("账户已注销");
+	    	        },
+	    	        error: function(msg){
+	    	            //alert("ajax连接异常："+msg);
+	    	        }
+	    	    });
+	    		
+	    		var cookies = $.cookie();
+	    		for(var cookie in cookies) {
+	    			
+	    		   $.removeCookie(cookie,{path:"/"});
+	    		}
+	    		alert("已注销");
+	    		document.location.href="SelfCenter.html";
+			}
+    		
+    		
+    	}
     </script>
 </head>
 <body>
@@ -104,6 +154,15 @@
                         <li class="ml-xl-5 ml-lg-2 mt-lg-0 mt-sm-4 mt-3">
                         	<span id="denglu"><a href="login.html" class="reqe-button">登录</a></span>
                         </li>
+                        <li class="has-dropdown"><a href="SelfCenter.html">个人中心</a>
+								<ul class="dropdown">
+									<li><a href="appointmentlist.html">我的预约</a></li>
+									<li><a href="expresssendlist.html">我的寄件</a></li>
+									<li><a href="expressreceivelist.html">我的收件</a></li>
+									<li><a href="addresslist.html">我的地址簿</a></li>
+									<li><a href="modify.html">修改信息</a></li>
+									<li><a href="#" onclick="logout();">退出登录</a></li>
+								</ul></li>
                     </ul>
                </div>
             </div>
@@ -165,9 +224,9 @@
 							data-animate-effect="fadeIn">
 							<span class="icon"> <i class="icon-cloud"></i>
 							</span>
-							<h3>我的信息</h3>
+							<h3>修改用户名</h3>
 							<p>
-								<a href="#" class="btn btn-primary btn-outline">查看</a>
+								<a href="modify.html" class="btn btn-primary btn-outline">修改</a>
 							</p>
 						</div>
 					</div>
@@ -178,7 +237,7 @@
 							</span>
 							<h3>注销账户</h3>
 							<p>
-								<a href="#" class="btn btn-primary btn-outline">注销</a>
+								<a href="#" onclick="deleteClient();" class="btn btn-primary btn-outline">注销</a>
 							</p>
 						</div>
 					</div>

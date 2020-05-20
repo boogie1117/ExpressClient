@@ -1,7 +1,6 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>卓越快递</title>
@@ -9,7 +8,6 @@
     <meta name="description" content="" />
     <meta name="keywords" content="" />
     <meta name="author" content="" />
-
     <!-- Facebook and Twitter integration -->
     <meta property="og:title" content=""/>
     <meta property="og:image" content=""/>
@@ -20,7 +18,6 @@
     <meta name="twitter:image" content="" />
     <meta name="twitter:url" content="" />
     <meta name="twitter:card" content="" />
-
     <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Playfair+Display:400,400i" rel="stylesheet">
 
@@ -55,12 +52,25 @@
     </script>
        <script type="text/javascript" src="lib/jquery/jquery.min.js"></script>
        <script type="text/javascript">
-       var clientName;
+      	var clientName;
+        var clientId;
+	   	var id;
+		var phone;
+		var name;
+		var regionCode;
+		var address;
+		//var sender=0;
+		sender=0;
+		//var receiver=0;
+		receiver=0;
+		var sid;
+		var rid;
        $(document).ready(function a(){
     	   if($.cookie('client_name')!=null){
    			clientName=$.cookie('client_name');
+   			clientId=$.cookie('client_id');
    			$("#denglu").html(clientName+",今天也要加油呀"); 
-   		}
+   			}
        });
        function check(){
     		if($.cookie('client_name')==null){
@@ -68,15 +78,499 @@
     			document.location.href="login.html";//alert("请登录");
     		}
        }
-       
-	function disable(){
-		document.getElementById("subbtn").disabled=true;
-	}
-	function enable(){
-		document.getElementById("subbtn").disabled=false;
-	}
-</script>
-    <script type="text/javascript">
+	       
+		function disable(){
+			document.getElementById("subbtn").disabled=true;
+		}
+		function enable(){
+			document.getElementById("subbtn").disabled=false;
+		}
+		function logout(){
+			
+			if($.cookie('client_name')==null){
+				alert("您未登录");		
+			}else{
+				var cookies = $.cookie();
+	    		for(var cookie in cookies) {
+	    			
+	    		   $.removeCookie(cookie,{path:"/"});
+	    		}
+	    		alert("已注销");
+	    		document.location.href="index.html";
+			}
+	
+		}
+    	function showCustomers1(){
+    		if($.cookie('client_id')==null){
+    			alert("登录后才可使用地址簿添加寄件人信息");
+    			//document.location.href="login.html";//alert("请登录");
+    		}else{
+    			$.get("http://39.99.212.164:8080/TestCxfHibernate/REST/Misc/getCustomerListByClient/"+clientId, {
+                }, function(data) {
+
+                    $.each(data, function(i, d) {
+                        $("select[name='customer1']").append(
+                                        "<option value='"+d.ID+"'>" + d.name+"&nbsp;"+d.telCode+"&nbsp;"+d.address
+                                        + "</option>");
+                    });
+                }, 'json');
+    			document.getElementById('customers1').style.display = "";
+    			$("select[name='customer1']").change(function() {
+    				//alert($(".cus option:selected").val());
+    				id=$(".cus1 option:selected").val();
+    				$.ajax({
+    			        url: "http://39.99.212.164:8080/TestCxfHibernate/REST/Misc/getCustomerInfo/"+id,
+    			        type: "get",
+    			        dataType: "json",
+    			        success: function(data){
+    			        	//alert("读到数据");
+    			        	show1(data);
+    			        },
+    			        error: function(msg){
+    			            alert("数据读取发送错误请稍后再试");
+    			        }
+    			    });
+                });
+    		}	
+    	}
+    	function show1(data){
+    		sender=data.ID;
+			//alert("添加"+data.name);
+			$("#name1").val(data.name);
+			$("#name1").attr('readonly','readonly');
+			$("#phone1").val(data.telCode);
+			$("#phone1").attr("readonly","readonly");
+			//$("#area1").val(data.regionCode);
+			document.getElementById('region1').style.display = "";
+			document.getElementById('regioncode1').style.display = "none";
+			$("#region1").val(data.regionString);
+			$("#region1").attr("readonly","readonly");
+			$("#address1").val(data.address);
+			$("#address1").attr("readonly","readonly");
+			document.getElementById('add1').style.display = "none";
+			document.getElementById('add10').style.display = "none";
+			document.getElementById('update1').style.display = "";
+    	}
+    	function showCustomers(){
+    		if($.cookie('client_id')==null){
+    			alert("登录后才可使用地址簿添加收件人信息");
+    			//document.location.href="login.html";//alert("请登录");
+    		}else{
+    			$.get("http://39.99.212.164:8080/TestCxfHibernate/REST/Misc/getCustomerListByClient/"+clientId, {
+                }, function(data) {
+
+                    $.each(data, function(i, d) {
+                        $("select[name='customer']").append(
+                                        "<option value='"+d.ID+"'>" + d.name+"&nbsp;"+d.telCode+"&nbsp;"+d.address
+                                        + "</option>");
+                    });
+                }, 'json');
+    			document.getElementById('customers').style.display = "";
+    			$("select[name='customer']").change(function() {
+    				//alert($(".cus option:selected").val());
+    				id=$(".cus option:selected").val();
+    				$.ajax({
+    			        url: "http://39.99.212.164:8080/TestCxfHibernate/REST/Misc/getCustomerInfo/"+id,
+    			        type: "get",
+    			        dataType: "json",
+    			        success: function(data){
+    			        	//alert("读到数据");
+    			        	show(data);
+    			        },
+    			        error: function(msg){
+    			            alert("数据读取发送错误请稍后再试");
+    			        }
+    			    });
+                });
+    		}	
+    	}
+    	function show(data){
+    		receiver=data.ID;
+    		$("#name").val(data.name);
+			$("#name").attr('readonly','readonly');
+			$("#phone").val(data.telCode);
+			$("#phone").attr("readonly","readonly");
+			//$("#area").val(data.regionCode);
+			document.getElementById('region').style.display = "";
+			document.getElementById('regioncode').style.display = "none";
+			$("#region").val(data.regionString);
+			$("#region").attr("readonly","readonly");
+			$("#address").val(data.address);
+			$("#address").attr("readonly","readonly");
+			document.getElementById('add').style.display = "none";
+			document.getElementById('add0').style.display = "none";
+			document.getElementById('update').style.display = "";
+    	}
+    	function showupdate1(){
+    		$("#name1").removeAttr("readonly");
+    		$("#phone1").removeAttr("readonly");
+			document.getElementById('region1').style.display = "none";
+			document.getElementById('regioncode1').style.display = "";
+			$("#region1").removeAttr("readonly");
+			$("#address1").removeAttr("readonly");
+			document.getElementById('add1').style.display = "";
+			document.getElementById('add10').style.display = "";
+			document.getElementById('update1').style.display = "none";
+    	}
+    	function showupdate(){
+    		$("#name").removeAttr("readonly");
+    		$("#phone").removeAttr("readonly");
+			document.getElementById('region').style.display = "none";
+			document.getElementById('regioncode').style.display = "";
+			$("#region").removeAttr("readonly");
+			$("#address").removeAttr("readonly");
+			document.getElementById('add').style.display = "";
+			document.getElementById('add0').style.display = "";
+			document.getElementById('update').style.display = "none";
+    	}
+    	function addSender(){
+    		phone=$("#phone1").val();
+    		//alert(phone);
+    		name=document.getElementById("name1").value;
+    		regionCode=$(".area1 option:selected").val();
+    		//alert(regionCode);
+    		address=document.getElementById("address1").value;
+    		//alert(clientId+"/"+name+"/"+phone+"/"+regionCode+"/"+address)
+    		$.ajax({
+    	        url: "http://39.99.212.164:8080/TestCxfHibernate/REST/Misc/addCustomer/"+clientId+"/"+phone+"/"+name+"/"+regionCode+"/"+address,
+    	        type: "get",
+    	        dataType: "json",
+    	        async: false,
+    	        success: function(data){
+    	        	sender=data.ID;
+    	        	if(clientId!=0){
+    	        		alert("添加成功,编号为"+sender);
+    	        	}
+    	        	//return sender;
+    	        },
+    	        error: function(msg){
+    	            alert("寄件人信息有误，请检查填写信息是否完整"+msg);
+    	        }
+    	    });
+    	}
+    	function addReceiver(){
+    		phone=$("#phone").val();
+    		//alert(phone);
+    		name=document.getElementById("name").value;
+    		regionCode=$(".area option:selected").val();
+    		//alert(regionCode);
+    		address=document.getElementById("address").value;
+    		$.ajax({
+    	        url: "http://39.99.212.164:8080/TestCxfHibernate/REST/Misc/addCustomer/"+clientId+"/"+phone+"/"+name+"/"+regionCode+"/"+address,
+    	        type: "get",
+    	        async: false,
+    	        dataType: "json",
+    	        success: function(data){
+    	        	receiver=data.ID;
+    	        	if(clientId!=0){
+    	        		alert("添加成功,编号为"+receiver);
+    	        	}
+    	        	//return receiver;
+    	        	//document.location.href="addresslist.html";
+    	        },
+    	        error: function(msg){
+    	            alert("收件人信息有误，请检查填写信息是否完整"+msg);
+    	        }
+    	    });
+    	}
+    	function updateSender(){		
+    		phone=document.getElementById("phone1").value;
+    		name=document.getElementById("name1").value;
+    		regionCode=$(".area1 option:selected").val();
+    		//alert("+++"+regionCode);
+    		//regionCode=120101;
+    		address=document.getElementById("address1").value;
+    		//alert(id+"+"+phone+"+"+name+"+"regionCode+"+"+address);
+    		$.ajax({
+    	        url: "http://39.99.212.164:8080/TestCxfHibernate/REST/Misc/updateCustomer/"+sender+"/"+phone+"/"+name+"/"+regionCode+"/"+address,
+    	        type: "get",
+    	        dataType: "json",
+    	        success: function(data){
+    	        	alert("地址簿更新成功"+data.name+","+data.telCode+","+data.regionString+","+data.address);
+    	        	//document.location.href="addresslist.html";
+    	        },
+    	        error: function(msg){
+    	            alert("ajax连接异常："+msg);
+    	        }
+    	    });
+    	}
+    	function updateReceiver(){		
+    		phone=document.getElementById("phone").value;
+    		name=document.getElementById("name").value;
+    		regionCode=$(".area option:selected").val();
+    		//alert("+++"+regionCode);
+    		//regionCode=120101;
+    		address=document.getElementById("address").value;
+    		//alert(id+"+"+phone+"+"+name+"+"regionCode+"+"+address);
+    		$.ajax({
+    	        url: "http://39.99.212.164:8080/TestCxfHibernate/REST/Misc/updateCustomer/"+receiver+"/"+phone+"/"+name+"/"+regionCode+"/"+address,
+    	        type: "get",
+    	        dataType: "json",
+    	        success: function(data){
+    	        	alert("地址簿更新成功"+data.name+","+data.telCode+","+data.regionString+","+data.address);
+    	        	//document.location.href="addresslist.html";
+    	        },
+    	        error: function(msg){
+    	            alert("ajax连接异常："+msg);
+    	        }
+    	    });
+    	}
+    	function order(){
+    		//alert(sender);
+    		if(sender==0){//不是地址簿中的也不是后来添加的
+    			clientId=0;
+    			addSender();
+    		}
+    		if(receiver==0){//不是地址簿中的也不是后来添加的
+    			clientId=0;
+    			addReceiver();
+    		}
+    		clientId=$.cookie('client_id');
+    		var weight=$('input:radio:checked').val();
+    		var type=$(".type option:selected").val();
+    		var remarks=document.getElementById("remarks").value;
+    		var sendaddress=document.getElementById("sendaddress").value;
+    		var sendtime=document.getElementById("sendtime").value;
+    		//alert(clientId+"+"+sender+"+"+receiver+"+"+weight+"+"+type+"+"+remarks);
+    		$.ajax({
+    	        url: "http://39.99.212.164:8080/TestCxfHibernate/REST/Domain/addAppointment/"+clientId+"/"+sender+"/"+receiver+"/"+weight+"/"+type+"/"+sendaddress+"/"+sendtime+"/"+remarks,
+    	        type: "get",
+    	        dataType: "json",
+    	        success: function(){
+    	        	alert("预约成功，请耐心等待揽收员与您联系");
+    	        	document.location.href="appointmentlist.html";
+    	        },
+    	        error: function(msg){
+    	            alert("预约无效，请检查填写信息是否完整"+msg);
+    	        }
+    	    });
+    	}
+    </script>
+</head>
+<body>
+
+<div class="fh5co-loader"></div>
+
+<div id="page">
+    <nav class="fh5co-nav" role="navigation">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3 col-xs-2">
+                    <div id="fh5co-logo"><img src="images/logo.png"><a href="index.html">卓越快递</a></div>
+
+                </div>
+                <div class="col-md-6 col-xs-6 text-center menu-1">
+                    <ul>
+                        <li class="has-dropdown">
+                            <a href="index.html">首页</a>
+                        </li>
+                        <li class="has-dropdown">
+                            <a href="ExpressSheetQueryById.html">订单查询</a>
+                            <ul class="dropdown">
+                                <li><a href="ExpressSheetQueryBytel.html">手机号查询订单</a></li>
+                                <li><a href="ExpressSheetQueryById.html">订单号查询订单</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="transNodeQuery.html">网点查询</a></li>
+                        <li><a href="delivery.html">预约寄件</a></li>
+
+                    </ul>
+
+                </div>
+                <div class="col-md-3 col-xs-2">
+						<ul>
+							<li class="ml-xl-5 ml-lg-2 mt-lg-0 mt-sm-4 mt-3"><span id="denglu"><a
+								href="login.html" class="reqe-button">登录</a></span> </li>
+								<li class="has-dropdown"><a href="SelfCenter.html">个人中心</a>
+								<ul class="dropdown">
+									<li><a href="appointmentlist.html">我的预约</a></li>
+									<li><a href="expresssendlist.html">我的寄件</a></li>
+									<li><a href="expressreceivelist.html">我的收件</a></li>
+									<li><a href="addresslist.html">我的地址簿</a></li>
+									<li><a href="modify.html">修改信息</a></li>
+									<li><a href="#" onclick="logout();">退出登录</a></li>
+								</ul></li>
+						</ul>
+
+					</div>
+
+            </div>
+
+        </div>
+    </nav>
+
+    <div class="modal-body align-w3">
+
+        <form action="appointmentlist.html" method="post" class="p-sm-3" onsubmit="order();">
+            <p align="center">
+    		           <span >寄件人信息</span>    		           
+            </p>
+            <div class="from-group text-right">
+           		 <select class="cus1" name="customer1" id="customers1" style="display:none;width:337px;height:40px"></select>
+            	<span class="btn btn-primary btn-outline" onclick="showCustomers1();">从地址簿中添加寄件人</span>
+            	
+            </div>
+            <div class="form-group">
+                <label for="name1" class="col-form-label">姓名</label>
+                <input type="text" class="form-control" placeholder="姓名" id="name1" required="required">
+            </div>
+            <div class="form-group">
+                <label for="phone1" class="col-form-label">手机号码</label>
+                <input type="text" class="form-control" placeholder="*** **** ****"  id="phone1" required="required">
+            </div>
+            <div class="form-group">
+                <label  class="col-form-label">所属区域</label>              
+               			 <p style="display:" id="regioncode1"> <select name='province1' class="" style="width:180px;height:40px" ></select>
+                         <select name='city1' class="" style="width:180px;height:40px"></select>               
+                		 <select name='area1' class="area1" style="width:180px;height:40px"></select></p>
+                		 <input type="text" class="form-control"  id="region1" style="display:none">
+            </div>
+            <div class="form-group">
+                <label for="address1" class="col-form-label">详细地址</label>
+                <input type="text" class="form-control" placeholder="详细地址"  id="address1" required="required">
+            </div>
+            <div class="form-group text-right">
+            	<p>
+	            	<span class="btn btn-primary btn-outline" onclick="updateSender();" id="add10" style="display:none">更新地址簿</span>
+	                <span class="btn btn-primary btn-outline" onclick="addSender();" id="add1">添加到地址簿</span>
+            	</p>
+               
+               <span class="btn btn-primary btn-outline" onclick="showupdate1();" id="update1" style="display:none">修改</span>
+            </div>
+            <p align="center">
+      		          收件人信息
+            </p>
+             <div class="from-group text-right">
+           		 <select class="cus" name="customer" id="customers" style="display:none;width:337px;height:40px"></select>
+            	<span class="btn btn-primary btn-outline" onclick="showCustomers();">从地址簿中添加收件人</span>
+            	
+            </div>
+            <div class="form-group">
+                <label for="name" class="col-form-label">姓名</label>
+                <input type="text" class="form-control" placeholder="姓名"  id="name" required="required">
+            </div>
+            <div class="form-group">
+                <label for="phone" class="col-form-label">手机号码</label>
+                <input type="text" class="form-control" placeholder="*** **** ****"  id="phone" required="required">
+            </div>
+            <div class="form-group">
+                <label class="col-form-label">所属区域</label>
+               			 <p style="display:" id="regioncode"> <select name='province' class="" style="width:180px;height:40px"></select>
+                         <select name='city' class="" style="width:180px;height:40px"></select>               
+                		 <select name='area' class="area" style="width:180px;height:40px"></select></p>
+                		 <input type="text" class="form-control"  id="region" style="display:none">
+            </div>
+            <div class="form-group">
+                <label for="address" class="col-form-label">详细地址</label>
+                <input type="text" class="form-control" placeholder="详细地址"  id="address" required="required">
+            </div>
+            <div class="form-group text-right">
+               <p>
+	            	<span class="btn btn-primary btn-outline" onclick="updateReceiver();" id="add0" style="display:none">更新地址簿</span>
+	                <span class="btn btn-primary btn-outline" onclick="addReceiver();" id="add">添加到地址簿</span>
+            	</p>
+               <span class="btn btn-primary btn-outline" onclick="showupdate();" id="update" style="display:none">修改</span>
+            </div>
+            <p align="center">
+        		        快件信息
+            </p>
+            <div class="form-group">
+                <label for="type" class="col-form-label">物品种类</label>
+                <select id="type" class="type">
+                    <option value="0">文件</option>
+                    <option value="1">数码产品</option>
+                    <option value="2">生活用品</option>
+                    <option value="3">服饰</option>
+                    <option value="4">食品</option>
+                    <option value="5">其他</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label  class="col-form-label">预估重量</label>
+                <label><input type="radio" name="weight" value="0" checked="checked">  1kg及以下 </label>
+                <label><input type="radio" name="weight" value="1">  1kg~2kg </label>
+                <label><input type="radio" name="weight" value="2">  2kg~3kg </label>
+                <label><input type="radio" name="weight" value="3">  3kg以上 </label>
+            </div>
+            <div class="form-group">
+                <label  class="col-form-label">取件地址</label>
+                <input type="text" class="form-control" id="sendaddress" required="required">
+            </div>
+            <div class="form-group">
+                <label  class="col-form-label">取件时间</label>
+                <input type="text" class="form-control" id="sendtime" value="不限">
+            </div>
+            <div class="form-group">
+                <label  class="col-form-label">备注</label>
+                <input type="text" class="form-control" value="备注" id="remarks">
+            </div>
+            <div class="sub-w3l">
+					<div class="sub-w3layouts_hub">
+						<input type="checkbox" id="brand2" value="0"
+							onclick="if(this.checked){enable()} else {disable()}"> <label
+							for="brand2" class="mb-3 text-secondary"> <span></span>我同意<a href="protocal.html">协议内容请点这里</a>
+						</label>
+					</div>
+				</div>
+            <div class="right-w3l">
+					<input type="submit" disabled="disabled" class="form-control bg-theme"
+						value="立即下单" id="subbtn">
+				</div>
+        </form>
+    </div>
+
+
+
+
+
+    <footer id="fh5co-footer" role="contentinfo">
+        <div class="container">
+
+
+            <div class="row copyright">
+                <div class="col-md-12 text-center">
+                    <p>
+                        <small class="block">项目独秀策划师</small>
+                    </p>
+                    <p>
+	                    <ul class="fh5co-social-icons">
+	                        <li><a href="#"><i class="icon-twitter"></i></a></li>
+	                        <li><a href="#"><i class="icon-facebook"></i></a></li>
+	                        <li><a href="#"><i class="icon-linkedin"></i></a></li>
+	                        <li><a href="#"><i class="icon-dribbble"></i></a></li>
+	                    </ul>
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </footer>
+</div>
+
+<div class="gototop js-top">
+    <a href="#" class="js-gotop"><i class="icon-arrow-up"></i></a>
+</div>
+
+<!-- jQuery -->
+<script src="js/jquery.min.js"></script>
+<!-- jQuery Easing -->
+<script src="js/jquery.easing.1.3.js"></script>
+<!-- Bootstrap -->
+<script src="js/bootstrap.min.js"></script>
+<!-- Waypoints -->
+<script src="js/jquery.waypoints.min.js"></script>
+<!-- Carousel -->
+<script src="js/owl.carousel.min.js"></script>
+<!-- countTo -->
+<script src="js/jquery.countTo.js"></script>
+<!-- Flexslider -->
+<script src="js/jquery.flexslider-min.js"></script>
+<!-- Main -->
+<script src="js/main.js"></script>
+
+    <script type="text/javascript" src="js/jquery.cookie.js"></script>
+</body>
+<script type="text/javascript">
         $(function() {
 
             // 初始化省市区
@@ -166,6 +660,7 @@
                 });
             }, 'json');
         }
+		
     </script>
     <script type="text/javascript">
         $(function() {
@@ -258,237 +753,5 @@
             }, 'json');
         }
     </script>
-    <script type="text/javascript">
-    	/*var sender_in = {
-    		cid  :clientId;
-    		name :document.getElementById("name1").val();
-    		telCode :document.getElementById("phone1").val();
-    		regionCode :document.getElementById("area1").val();
-    		address :document.getElementById("address1").val();
-    	}*/
-    	/*function saveSender(){
-    		var clientId=3;
-    	    $.ajax({
-    	        url: "http://39.99.212.164:8080/TestCxfHibernate/REST/Misc/saveCustomerInfo/",
-    	        type: "post",
-    	        data:{
-    	        	sender :JSON.stringify(sender_in);
-    	        }
-    	        dataType: "text",
-    	        success: function(data){
-    	            //这个方法里是ajax发送请求成功之后执行的代码
-    	            showData(data);
-    	        },
-    	        error: function(msg){
-    	            alert("ajax连接异常："+msg);
-    	        }
-    	    });
-    	}*/
-    	/*var receiver = {
-    		name :document.getElementById("name").val();
-    		telCode :document.getElementById("phone").val();
-    		regionCode :document.getElementById("area").val();
-    		address :document.getElementById("address").val();
-    	}*/
-
-    </script>
-</head>
-<body>
-
-<div class="fh5co-loader"></div>
-
-<div id="page">
-    <nav class="fh5co-nav" role="navigation">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-3 col-xs-2">
-                    <div id="fh5co-logo"><img src="images/logo.png"><a href="index.html">卓越快递</a></div>
-
-                </div>
-                <div class="col-md-6 col-xs-6 text-center menu-1">
-                    <ul>
-                        <li class="has-dropdown">
-                            <a href="index.html">首页</a>
-                        </li>
-                        <li class="has-dropdown">
-                            <a href="ExpressSheetQueryById.html">订单查询</a>
-                            <ul class="dropdown">
-                                <li><a href="ExpressSheetQueryBytel.html">手机号查询订单</a></li>
-                                <li><a href="ExpressSheetQueryById.html">订单号查询订单</a></li>
-                            </ul>
-                        </li>
-                        <li><a href="transNodeQuery.html">网点查询</a></li>
-                        <li><a href="delivery.html">预约寄件</a></li>
-
-                    </ul>
-
-                </div>
-                <div class="col-md-3 col-xs-2">
-						<ul>
-							<li class="ml-xl-5 ml-lg-2 mt-lg-0 mt-sm-4 mt-3"><span id="denglu"><a
-								href="login.html" class="reqe-button">登录</a></span> </li>
-								<li class="has-dropdown"><a href="SelfCenter.html">个人中心</a>
-								<ul class="dropdown">
-									<li><a href="appointmentlist.html">我的预约</a></li>
-									<li><a href="expresssendlist.html">我的寄件</a></li>
-									<li><a href="expressreceivelist.html">我的收件</a></li>
-									<li><a href="addresslist.html">我的地址簿</a></li>
-									<li><a href="#">修改信息</a></li>
-									<li><a href="#">退出登录</a></li>
-								</ul></li>
-						</ul>
-
-					</div>
-
-            </div>
-
-        </div>
-    </nav>
-
-    <div class="modal-body align-w3">
-
-        <form action="#" method="post" class="p-sm-3" onsubmit="check();">
-            <p align="center">
-                寄件人信息
-            </p>
-            <div class="form-group">
-                <label for="name1" class="col-form-label">姓名</label>
-                <input type="text" class="form-control" placeholder="姓名" id="name1" required="">
-            </div>
-            <div class="form-group">
-                <label for="phone1" class="col-form-label">手机号码</label>
-                <input type="email" class="form-control" placeholder="*** **** ****"  id="phone1"
-                       required="">
-            </div>
-            <div class="form-group">
-                <label  class="col-form-label">所属区域</label>
-               
-                <select name='province1' class="form-control"></select>
-         
-                
-                <select name='city1' class="form-control"></select>
-                
-                <select name='area1' class="form-control"></select>
-            </div>
-            <div class="form-group">
-                <label for="address1" class="col-form-label">详细地址</label>
-                <input type="text" class="form-control" placeholder="详细地址"  id="address1" required="">
-            </div>
-            <p align="center">
-                收件人信息
-            </p>
-            <div class="form-group">
-                <label for="name" class="col-form-label">姓名</label>
-                <input type="text" class="form-control" placeholder="姓名"  id="name" required="">
-            </div>
-            <div class="form-group">
-                <label for="phone" class="col-form-label">手机号码</label>
-                <input type="email" class="form-control" placeholder="*** **** ****"  id="phone"
-                       required="">
-            </div>
-            <div class="form-group">
-                <label class="col-form-label">所属区域</label><label  class="col-form-label">所属区域</label>
-                <select name='province' class="form-control"></select>
-         
-                
-                <select name='city' class="form-control"></select>
-                
-                <select name='area' class="form-control"></select>
-            </div>
-            <div class="form-group">
-                <label for="address" class="col-form-label">详细地址</label>
-                <input type="text" class="form-control" placeholder="详细地址"  id="address" required="">
-            </div>
-            <p align="center">
-                快件信息
-            </p>
-            <div class="form-group">
-                <label for="type" class="col-form-label">物品种类</label>
-                <select id="type" class="form-control">
-                    <option value="文件">文件</option>
-                    <option value="数码产品">数码产品</option>
-                    <option value="生活用品">生活用品</option>
-                    <option value="服饰">服饰</option>
-                    <option value="食品">食品</option>
-                    <option value="其他">其他</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label  class="col-form-label">预估重量</label>
-                <label><input type="radio" name="weight" >  1kg及以下 </label>
-                <label><input type="radio" name="weight" >  1kg~2kg </label>
-                <label><input type="radio" name="weight" >  2kg~3kg </label>
-                <label><input type="radio" name="weight" >  3kg以上 </label>
-            </div>
-            <div class="form-group">
-                <label  class="col-form-label">备注</label>
-                <input type="text" class="form-control"value="备注">
-            </div>
-            <div class="sub-w3l">
-					<div class="sub-w3layouts_hub">
-						<input type="checkbox" id="brand2" value="0"
-							onclick="if(this.checked){enable()} else {disable()}"> <label
-							for="brand2" class="mb-3 text-secondary"> <span></span>我同意<a href="protocal.html">协议内容请点这里</a>
-						</label>
-					</div>
-				</div>
-            <div class="right-w3l">
-					<input type="submit" disabled="true" class="form-control bg-theme"
-						value="立即下单" id="subbtn">
-				</div>
-        </form>
-    </div>
-
-
-
-
-
-    <footer id="fh5co-footer" role="contentinfo">
-        <div class="container">
-
-
-            <div class="row copyright">
-                <div class="col-md-12 text-center">
-                    <p>
-                        <small class="block">项目独秀策划师</small>
-                    </p>
-                    <p>
-                    <ul class="fh5co-social-icons">
-                        <li><a href="#"><i class="icon-twitter"></i></a></li>
-                        <li><a href="#"><i class="icon-facebook"></i></a></li>
-                        <li><a href="#"><i class="icon-linkedin"></i></a></li>
-                        <li><a href="#"><i class="icon-dribbble"></i></a></li>
-                    </ul>
-                    </p>
-                </div>
-            </div>
-
-        </div>
-    </footer>
-</div>
-
-<div class="gototop js-top">
-    <a href="#" class="js-gotop"><i class="icon-arrow-up"></i></a>
-</div>
-
-<!-- jQuery -->
-<script src="js/jquery.min.js"></script>
-<!-- jQuery Easing -->
-<script src="js/jquery.easing.1.3.js"></script>
-<!-- Bootstrap -->
-<script src="js/bootstrap.min.js"></script>
-<!-- Waypoints -->
-<script src="js/jquery.waypoints.min.js"></script>
-<!-- Carousel -->
-<script src="js/owl.carousel.min.js"></script>
-<!-- countTo -->
-<script src="js/jquery.countTo.js"></script>
-<!-- Flexslider -->
-<script src="js/jquery.flexslider-min.js"></script>
-<!-- Main -->
-<script src="js/main.js"></script>
-
-    <script type="text/javascript" src="js/jquery.cookie.js"></script>
-</body>
 </html>
 

@@ -57,39 +57,44 @@
     </script>
 <script type="text/javascript" src="lib/jquery/jquery.min.js"></script>
 <script type="text/javascript">
-var clientId;
-var clientName;
-$(document).ready(function requestData(){
+	var clientId;
+	var clientName;
+	var id;
+	var phone;
+	var name;
+	var regionCode;
+	var address;
+	$(document).ready(function requestData(){
+		
+		if($.cookie('client_id')!=null){
+			clientId=$.cookie('client_id');
+			clientName=$.cookie('client_name');
+			$("#denglu").html(clientName+",今天也要加油呀"); 
+		}else{
+			alert("请登录");
+			document.location.href="login.html";//alert("请登录");
+		}
+	    $.ajax({
+	        url: "http://39.99.212.164:8080/TestCxfHibernate/REST/Misc/getCustomerListByClient/"+clientId,
+	        type: "get",
+	        dataType: "json",
+	        success: function(data){
+	            /*这个方法里是ajax发送请求成功之后执行的代码*/
+	             //       alert("***");
 	
-	if($.cookie('client_id')!=null){
-		clientId=$.cookie('client_id');
-		clientName=$.cookie('client_name');
-		$("#denglu").html(clientName+",今天也要加油呀"); 
-	}else{
-		alert("请登录");
-		document.location.href="login.html";//alert("请登录");
-	}
-    $.ajax({
-        url: "http://39.99.212.164:8080/TestCxfHibernate/REST/Misc/getCustomerListByClient/"+clientId,
-        type: "get",
-        dataType: "json",
-        success: function(data){
-            /*这个方法里是ajax发送请求成功之后执行的代码*/
-             //       alert("***");
-
-            showData(data);
-        },
-        error: function(msg){
-            //showData(data);
-
-            alert("ajax连接异常："+msg);
-        }
-    });
-});
+	            showData(data);
+	        },
+	        error: function(msg){
+	            //showData(data);
+	
+	            alert("ajax连接异常："+msg);
+	        }
+	    });
+	});
 
 
-//把ajax传过来的数据展示出来
-function showData(data) {
+	//把ajax传过来的数据展示出来
+	function showData(data) {
         var str = "";//定义用于拼接的字符串
        // alert("+++");
         for (var i = 0; i < data.length; i++) {
@@ -97,7 +102,7 @@ function showData(data) {
             str = "<tr><td>" + data[i].ID + 
             "</td><td>" + data[i].name +
             "</td><td>" + data[i].telCode +
-            "</td><td>" + data[i].regionCode +
+            "</td><td>" + data[i].regionString +
             "</td><td>" + data[i].address +
             "</td></tr>";
            	            //str = "<tr><td>" + 0 + "</td><td>" + 0 + "</td><td>" + 0 +"</td><td>" +  0 +"</td></tr>";
@@ -107,6 +112,112 @@ function showData(data) {
             $("#addresslist").append(str);         
             }
     }
+	function logout(){
+		
+		if($.cookie('client_name')==null){
+			alert("您未登录");		
+		}else{
+			var cookies = $.cookie();
+			for(var cookie in cookies) {
+				
+			   $.removeCookie(cookie,{path:"/"});
+			}
+			//$.removeCookie('client_name', { path:'/' });
+	
+			//$.cookie('client_name', null, { path: '/' });
+	
+			//$.removeCookie('client_name');
+			alert("已注销");
+			document.location.href="index.html";
+		}
+	
+	}
+	function showAdd(){
+		document.getElementById('tianjia').style.display = "";
+	}
+	function add(){
+		phone=document.getElementById("telphone").value;
+		name=document.getElementById("name").value;
+		regionCode=$(".area1 option:selected").val();
+		//alert(regionCode);
+		address=document.getElementById("address").value;
+		$.ajax({
+	        url: "http://39.99.212.164:8080/TestCxfHibernate/REST/Misc/addCustomer/"+clientId+"/"+phone+"/"+name+"/"+regionCode+"/"+address,
+	        type: "get",
+	        dataType: "json",
+	        success: function(data){
+	        	alert("添加成功");
+	        	document.location.href="addresslist.html";
+	        },
+	        error: function(msg){
+	            alert("无法添加，请检查填写信息是否完整"+msg);
+	        }
+	    });
+	}
+	function deleteCustomer(){
+		id=document.getElementById("shanchu").value;
+		//alert(id);
+		$.ajax({
+	        url: "http://39.99.212.164:8080/TestCxfHibernate/REST/Misc/deleteCustomerInfo/"+id,
+	        type: "get",
+	        dataType: "text",
+	        async: false,
+	        success: function(msg){
+	        	alert("删除成功");
+	        	document.location.href="addresslist.html";
+	        },
+	        error: function(msg){
+	        	alert("无法删除，该地址现在仍有快递");
+	        	document.location.href="addresslist.html";
+	        }
+	    });
+	}
+	function showUpdate(){
+		id=document.getElementById("gengxin").value;
+		//alert(id);
+		$.ajax({
+	        url: "http://39.99.212.164:8080/TestCxfHibernate/REST/Misc/getCustomerInfo/"+id,
+	        type: "get",
+	        dataType: "json",
+	        success: function(data){
+	        	show(data);
+	        },
+	        error: function(msg){
+	            alert("请输入正确编号");
+	        }
+	    });
+	}
+	function show(data){
+		document.getElementById('update').style.display = "";
+		//alert(data.name);
+		$("#uname").val(data.name);
+		$("#utelphone").val(data.telCode);
+		//$("#uregionCode").val(data.regionCode);
+		$("#uaddress").val(data.address);
+	}
+	function update(){		
+		//id=document.getElementById("gengxin").value;		
+		phone=document.getElementById("utelphone").value;
+		name=document.getElementById("uname").value;
+		regionCode=$(".area option:selected").val();
+		//alert("+++"+regionCode);
+		//regionCode=120101;
+		address=document.getElementById("uaddress").value;
+		//alert(id+"+"+phone+"+"+name+"+"regionCode+"+"+address);
+		$.ajax({
+	        url: "http://39.99.212.164:8080/TestCxfHibernate/REST/Misc/updateCustomer/"+id+"/"+phone+"/"+name+"/"+regionCode+"/"+address,
+	        type: "get",
+	        dataType: "json",
+	        success: function(data){
+	        	alert("更新成功");
+	        	document.location.href="addresslist.html";
+	        },
+	        error: function(msg){
+	            alert("ajax连接异常："+msg);
+	        }
+	    });
+	}
+
 
 </script>
 
@@ -131,7 +242,7 @@ function showData(data) {
                         <li class="has-dropdown">
                             <a href="transNodeQuery.html">订单查询</a>
                             <ul class="dropdown">
-                                <li><a href="ExpressSheetQueryById.html">手机号查询订单</a></li>
+                                <li><a href="ExpressSheetQueryBytel.html">手机号查询订单</a></li>
                                 <li><a href="ExpressSheetQueryById.html">订单号查询订单</a></li>
                             </ul>
                         </li>
@@ -151,8 +262,8 @@ function showData(data) {
 									<li><a href="expresssendlist.html">我的寄件</a></li>
 									<li><a href="expressreceivelist.html">我的收件</a></li>
 									<li><a href="addresslist.html">我的地址簿</a></li>
-									<li><a href="#">修改信息</a></li>
-									<li><a href="#">退出登录</a></li>
+									<li><a href="modify.html">修改信息</a></li>
+									<li><a href="#" onclick="logout();">退出登录</a></li>
 								</ul></li>
 						</ul>
 
@@ -163,11 +274,15 @@ function showData(data) {
         </div>
     </nav>
 	<div align ="center" width="40%">
-            <div witdth="40%">
+            <div width="40%">
                <div >
                     <span align="center"> 我的地址簿</span>
                </div>
-
+				<div >
+					<span> <a href="#" class="btn btn-primary btn-outline" onclick="showAdd()">添加</a></span>
+					<span> <a href="#" class="btn btn-primary btn-outline" onclick="deleteCustomer()">删除</a><input type="text" id="shanchu" style="width:30px;height:22px"></span>
+					<span> <a href="#" class="btn btn-primary btn-outline" onclick="showUpdate()">修改</a><input type="text" id="gengxin" style="width:30px;height:22px"></span>
+				</div>
             </div>
 	
 	</div>
@@ -178,10 +293,10 @@ function showData(data) {
 		    <div class="cloudMtxTable_body">
 		      <table id="addresslist" class="cloudTable"  style="table-layout:fixed">
 		        <colgroup>
-	 				<col width="60px">
-			        <col width="100px">
+	 				<col width="65px">
+			        <col width="80px">
 			        <col width="150px">
-			        <col width="100px">
+			        <col width="160px">
 			        <col width="250px">
 		        </colgroup>
 		        <thead class="cloudTable_header">
@@ -189,19 +304,35 @@ function showData(data) {
 		          <th style="text-align:center;">id</th>
 		          <th style="text-align:center;">姓名</th>
 		          <th style="text-align:center;">联系方式</th>
-		          <th style="text-align:center;">区域编码</th>
+		          <th style="text-align:center;">地市区域</th>
 		          <th style="text-align:center;">详细地址</th>
 		        </tr>
 		      </thead>
 		        <tbody class="cloudTable_body ">
-		        <!--   <tr>
-		            <td><sapn id="id"></sapn></td>
-		            <td><span id="name"></span></td>
-		            <td><sapn id="telphone"></sapn></td>
-		            <td><span id="regoinCode"></span></td>
-		            <td><span id="address"></span></td>
-		          </tr> -->
-		          
+		           <tr style="display:none;" id="tianjia">
+		            <td><span><a href="#" class="btn btn-primary btn-outline" onclick="add();">确认添加</a></span></td>
+		            <td><span><input type="text" id="name" style="width:135px" class="form-control"></span></td>
+		            <td><span><input type="text" id="telphone" style="width:250px" class="form-control"></span></td>
+		            <td><span class="form-group" >               
+		            	 <p> <select name='province1' class="" style="width:85px;height:40px;margin-top:10px"></select>
+                         <select name='city1' class="" style="width:85px;height:40px"></select>               
+                		 <select name='area1' class="area1" style="width:80px;height:40px"></select></p>
+                		</span>
+                	</td>
+		            <td><span><input type="text" id="address" style="width:440px" class="form-control"></span></td>
+		          </tr>
+		          <tr style="display:none;" id="update">
+		            <td><span><a href="addresslist.html" class="btn btn-primary btn-outline" onclick="update();">确认更新</a></span></td>
+		            <td><span><input type="text" id="uname" style="width:135px" class="form-control" required="required"></span></td>
+		            <td><span><input type="text" id="utelphone" style="width:250px" class="form-control" required="required"></span></td>
+		            <td><span>              
+		            	<p> <select name='province' class="" style="width:85px;height:40px;margin-top:10px"></select>
+                         <select name='city' class="" style="width:85px;height:40px"></select>               
+                		 <select name='area' class="area" style="width:80px;height:40px"></select></p>
+                		</span>
+		            </td>
+		            <td><span><input type="text" id="uaddress" style="width:440px" class="form-control" required="required"></span></td>
+		          </tr>
 		
 		        </tbody>
 		
@@ -261,3 +392,186 @@ function showData(data) {
 </body>
 </html>
 
+ <script type="text/javascript">
+        $(function() {
+
+            // 初始化省市区
+            initAddress1();
+
+            // 更改省份后的操作
+            $("select[name='province1']").change(function() {
+
+                var provCode = $("select[name='province1']").val();
+
+                getCity1(provCode);
+
+            });
+
+            // 更改城市后的操作
+            $("select[name='city1']").change(function() {
+                var cityCode = $("select[name='city1']").val();
+                getArea1(cityCode);
+            });
+
+        });
+
+        function initAddress1() {
+
+            var firstProvCode;
+            // ajax请求所有省份
+            $.get("http://39.99.212.164:8080/TestCxfHibernate/REST/Misc/getProvinceList", {
+                method : "initProvince"
+            }, function(data) {
+
+                $.each(data, function(i, d) {
+                    $("select[Name='province1']").append(
+                                    "<option value='"+d.Code+"'>" + d.Name
+                                    + "</option>");
+                });
+
+                // 获取第一个省份的code
+                firstProvCode = data[0].Code;
+                // 根据第一个省份code获取对应城市列表
+                getCity1(firstProvCode);
+            }, 'json');
+
+        }
+
+        //获取对应城市列表（里面包括获取第一个城市的区县列表）
+        function getCity1(provCode) {
+
+            var firstCityCode;
+
+            // ajax请求所有市级单位
+            $.get("http://39.99.212.164:8080/TestCxfHibernate/REST/Misc/getCityList/"+provCode, {
+//                method : "getCity",
+//                provCode : provCode
+            }, function(data) {
+
+                // 先清空城市下拉框
+                $("select[name='city1']").empty();
+
+                $.each(data, function(i, d) {
+                    $("select[name='city1']").append(
+                                    "<option value='"+d.Code+"'>" + d.Name
+                                    + "</option>");
+                });
+
+                // 获取第一个城市的code
+                firstCityCode = data[0].Code;
+                // 根据第一个城市code获取对应区县列表
+                getArea1(firstCityCode);
+
+            }, 'json');
+        }
+
+        function getArea1(cityCode) {
+
+            // ajax请求所有区县单位
+            $.get("http://39.99.212.164:8080/TestCxfHibernate/REST/Misc/getTownList/"+cityCode, {
+//                method : "getArea",
+//                cityCode : cityCode
+            }, function(data) {
+
+                // 先清空区县下拉框
+                $("select[name='area1']").empty();
+                $.each(data, function(i, d) {
+                    $("select[name='area1']").append(
+                                    "<option value='"+d.Code+"'>" + d.Name
+                                    + "</option>");
+                });
+            }, 'json');
+        }
+    </script>
+    <script type="text/javascript">
+        $(function() {
+
+            // 初始化省市区
+            initAddress();
+
+            // 更改省份后的操作
+            $("select[name='province']").change(function() {
+
+                var provCode = $("select[name='province']").val();
+
+                getCity(provCode);
+
+            });
+
+            // 更改城市后的操作
+            $("select[name='city']").change(function() {
+                var cityCode = $("select[name='city']").val();
+                getArea(cityCode);
+            });
+
+        });
+
+        function initAddress() {
+
+            var firstProvCode;
+            // ajax请求所有省份
+            $.get("http://39.99.212.164:8080/TestCxfHibernate/REST/Misc/getProvinceList", {
+                method : "initProvince"
+            }, function(data) {
+
+                $.each(data, function(i, d) {
+                    $("select[Name='province']").append(
+                                    "<option value='"+d.Code+"'>" + d.Name
+                                    + "</option>");
+                });
+
+                // 获取第一个省份的code
+                firstProvCode = data[0].Code;
+                // 根据第一个省份code获取对应城市列表
+                getCity(firstProvCode);
+            }, 'json');
+
+        }
+
+        //获取对应城市列表（里面包括获取第一个城市的区县列表）
+        function getCity(provCode) {
+
+            var firstCityCode;
+
+            // ajax请求所有市级单位
+            $.get("http://39.99.212.164:8080/TestCxfHibernate/REST/Misc/getCityList/"+provCode, {
+//                method : "getCity",
+//                provCode : provCode
+            }, function(data) {
+
+                // 先清空城市下拉框
+                $("select[name='city']").empty();
+
+                $.each(data, function(i, d) {
+                    $("select[name='city']").append(
+                                    "<option value='"+d.Code+"'>" + d.Name
+                                    + "</option>");
+                });
+
+                // 获取第一个城市的code
+                firstCityCode = data[0].Code;
+                // 根据第一个城市code获取对应区县列表
+                getArea(firstCityCode);
+
+            }, 'json');
+        }
+
+        function getArea(cityCode) {
+
+            // ajax请求所有区县单位
+            $.get("http://39.99.212.164:8080/TestCxfHibernate/REST/Misc/getTownList/"+cityCode, {
+//                method : "getArea",
+//                cityCode : cityCode
+            }, function(data) {
+
+                // 先清空区县下拉框
+                $("select[name='area']").empty();
+                $.each(data, function(i, d) {
+                    $("select[name='area']").append(
+                                    "<option value='"+d.Code+"'>" + d.Name
+                                    + "</option>");
+                });
+            }, 'json');
+        }
+    </script>
+    

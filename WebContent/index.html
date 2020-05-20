@@ -57,11 +57,6 @@
             IcsWebSdkJs.init('https://bot.4paradigm.com/web/chat/21534/d29ae7d1-6025-4244-abc9-f87b65ea16ed'); // 初始化组件, url为体验机器人的URL
         }
     </script>
-    <script type="text/javascript">
-    			function getSessionId(){
-    	            alert($.cookie("JSESSIONID"));
-    	        }
-    </script>
     <script type="text/javascript" src="lib/jquery/jquery.min.js"></script>
     <script type="text/javascript">
     var telCode;
@@ -93,6 +88,26 @@
             $.cookie('client_id', data.cid,{ path: '/' });
             $.cookie('client_name', data.cname,{ path: '/' });
         }
+		function logout(){
+    		
+    		if($.cookie('client_name')==null){
+				alert("您未登录");		
+			}else{
+				var cookies = $.cookie();
+	    		for(var cookie in cookies) {
+	    			
+	    		   $.removeCookie(cookie,{path:"/"});
+	    		}
+	    		//$.removeCookie('client_name', { path:'/' });
+	
+	    		//$.cookie('client_name', null, { path: '/' });
+	
+	    		//$.removeCookie('client_name');
+	    		alert("已注销");
+	    		document.location.href="index.html";
+			}
+ 
+    	}
     </script>
 </head>
 <body>
@@ -133,8 +148,8 @@
 									<li><a href="expresssendlist.html">我的寄件</a></li>
 									<li><a href="expressreceivelist.html">我的收件</a></li>
 									<li><a href="addresslist.html">我的地址簿</a></li>
-									<li><a href="#">修改信息</a></li>
-									<li><a href="#">退出登录</a></li>
+									<li><a href="modify.html">修改信息</a></li>
+									<li><a href="#" onclick="logout();">退出登录</a></li>
 								</ul></li>
 						</ul>
 

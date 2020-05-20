@@ -43,6 +43,7 @@
     <!-- Theme style  -->
     <link rel="stylesheet" href="css/style.css">
 <link rel="stylesheet" href="css/table.css">
+<link rel="stylesheet" href="css/expresssheet.css">
     <!-- Modernizr JS -->
     <script src="js/modernizr-2.6.2.min.js"></script>
     <!-- FOR IE9 below -->
@@ -66,24 +67,26 @@ $(document).ready(function requestData(){
 	}
 	if($.cookie('express_id')!=null){
 		expressId=$.cookie('express_id');
+			$.ajax({
+	        url: "http://39.99.212.164:8080/TestCxfHibernate/REST/Domain/getExpressSheet/"+expressId,
+	        type: "get",
+	        dataType: "json",
+	        success: function(data){
+	            /*这个方法里是ajax发送请求成功之后执行的代码*/
+	            showData(data);
+	            queryHistory(expressId);
+	        },
+	        error: function(msg){
+	            alert("该快递单不存在，请重新输入");
+	        }
+	    });
 	}
-    $.ajax({
-        url: "http://39.99.212.164:8080/TestCxfHibernate/REST/Domain/getExpressSheet/"+expressId,
-        type: "get",
-        dataType: "json",
-        success: function(data){
-            /*这个方法里是ajax发送请求成功之后执行的代码*/
-            showData(data);
-        },
-        error: function(msg){
-            alert("ajax连接异常："+msg);
-        }
-    });
+    
 });
 
 
-//把ajax传过来的数据展示出来
-function showData(data) {
+	//把ajax传过来的数据展示出来
+	function showData(data) {
         $("#expressId").html(data.ID);
         $("#name1").html(data.sender.name);
         $("#name2").html(data.recever.name);
@@ -99,12 +102,127 @@ function showData(data) {
         case 4:$("#type").html("食品");break;
         default:$("#type").html("其它");
         }
-        $("#weight").html(data.weight);
+        $("#weight").html(data.weight+"kg");
         //$("#weight").html(data.ID);
-        $("#time").html(new Date());
-        
-    }
+        $("#time").html(data.accepteTime);
+        $("#node1").html("快递单生成 ");
+		$("#time1").html(data.accepteTime);
+		document.getElementById("show1").style.display = "";
+		if(data.status==5){
+			$("#node6").html("快递已签收");
+			$("#time6").html();
+			document.getElementById("show6").style.display = "";
+		}
+   }
+	function logout(){
+	
+		if($.cookie('client_name')==null){
+			alert("您未登录");		
+		}else{
+			var cookies = $.cookie();
+			for(var cookie in cookies) {
+				
+			   $.removeCookie(cookie,{path:"/"});
+			}
+			//$.removeCookie('client_name', { path:'/' });
+	
+			//$.cookie('client_name', null, { path: '/' });
+	
+			//$.removeCookie('client_name');
+			alert("已注销");
+			document.location.href="index.html";
+		}
+	
+	}
+	function show(){
+		document.getElementById("history").style.display = "";
+	}
 
+
+    function queryHistory(expressId){
+	    	
+    	$.ajax({
+	        url: "http://39.99.212.164:8080/TestCxfHibernate/REST/Domain/getHistoryByExpress/"+expressId,
+	        type: "get",
+	        dataType: "json",
+	        success: function(data){
+	           showHistory(data); 
+	        },
+	        error: function(msg){
+	            alert("该快递单状态还未更新，无运输信息");
+	        }
+	    });
+    }
+    function showHistory(data){
+    	var i;
+    	var length=data.length;
+    	for(i=0;i<length;i++){
+    		if(data[i].pkg.status==4){
+	    		$("#node5").html("网点："+data[i].userFrom.dptID.nodeName+"的配送员"+data[i].userFrom.name+"正在派送");
+				$("#time5").html("配送员联系方式："+data[i].userFrom.telCode);
+				document.getElementById("show5").style.display = "";
+	    	}
+    	}
+		
+    	if(length>0&&data[0].pkg.status!=4){
+    		
+    		if(data[0].userTo){
+    			//alert(data[0].userFrom.dptID.nodeName);
+    			$("#node2").html("快件离开："+data[0].userFrom.dptID.nodeName+"-快件到达："+data[0].userTo.dptID.nodeName);
+				$("#time2").html(data[0].actTime);
+				document.getElementById("show2").style.display = "";
+    		}else{
+    			
+    			$("#node2").html("快件当前在 ："+data[0].userFrom.dptID.nodeName);
+				$("#time2").html(data[0].actTime);
+				document.getElementById("show2").style.display = "";
+    		}
+    		
+    	}
+    	if(length>1&&data[1].pkg.status!=4){
+    		if(data[1].userTo){
+    			$("#node3").html("快件离开："+data[1].userFrom.dptID.nodeName+"-快件到达："+data[1].userTo.dptID.nodeName);
+				$("#time3").html(data[1].actTime);
+				document.getElementById("show3").style.display = "";
+    		}else{
+    			$("#node3").html("快件当前在 ："+data[1].userFrom.dptID.nodeName);
+				$("#time3").html(data[1].actTime);
+				document.getElementById("show3").style.display = "";
+    		}
+
+    	}
+    	//alert(data[2].pkg.status);
+    	if(length>2&&data[2].pkg.status!=4){
+    		
+    		if(data[2].userTo){
+    			$("#node4").html("快件离开："+data[2].userFrom.dptID.nodeName+"-快件到达："+data[2].userTo.dptID.nodeName);
+				$("#time4").html(data[2].actTime);
+				document.getElementById("show4").style.display = "";
+    		}else{
+    			$("#node4").html("快件当前在 ："+data[2].userFrom.dptID.nodeName);
+				$("#time4").html(data[2].actTime);
+				document.getElementById("show4").style.display = "";
+    		}
+    		
+    	}
+    	
+    }
+   /* function findUserTel(uid){
+    	$.ajax({
+	        url: "http://39.99.212.164:8080/TestCxfHibernate/REST/Misc/findUserById/"+uid,
+	        type: "get",
+	        dataType: "json",
+	        async:false,
+	        success: function(data){
+	            $("#node5").html("配送中...配送员联系方式："+data.telCode);
+				$("#time5").html("配送员姓名："+data.name);
+				document.getElementById("show5").style.display = "";
+	        },
+	        error: function(msg){
+	            alert("该快递单状态还未更新，无运输信息");
+	        }
+	    });
+    }*/
 </script>
 
 </head>
@@ -128,7 +246,7 @@ function showData(data) {
                         <li class="has-dropdown">
                             <a href="#">订单查询</a>
                             <ul class="dropdown">
-                                <li><a href="ExpressSheetQueryById.html">手机号查询订单</a></li>
+                                <li><a href="ExpressSheetQueryBytel.html">手机号查询订单</a></li>
                                 <li><a href="ExpressSheetQueryById.html">订单号查询订单</a></li>
                             </ul>
                         </li>
@@ -148,8 +266,8 @@ function showData(data) {
 									<li><a href="expresssendlist.html">我的寄件</a></li>
 									<li><a href="expressreceivelist.html">我的收件</a></li>
 									<li><a href="addresslist.html">我的地址簿</a></li>
-									<li><a href="#">修改信息</a></li>
-									<li><a href="#">退出登录</a></li>
+									<li><a href="modify.html">修改信息</a></li>
+									<li><a href="#" onclick="logout();">退出登录</a></li>
 								</ul></li>
 						</ul>
 
@@ -214,8 +332,45 @@ function showData(data) {
 		</table>
 	
 	</div>
-<div class="col-md-3 col-xs-2">
-	<a href="expresshistory.html">物流信息</a>
+<div class="container">
+	<button onclick="show()" style="margin-top:20px ;">物流信息</button>
+	<div class="package-status" id="history" style="display: none; ">
+		<!--<span id="no">暂无物流信息</span>-->
+			<div class="status-box" >
+				<ul  class="status-list" style="padding-bottom: 50px">
+					<li id="show6" style="display: none;">
+						<div class="status-content-before"><span id="node6"></span></div>
+						<div class="status-time-before"><span id="time6"></span></div>
+						<div class="status-line"></div>
+					</li>
+        			<li id="show5" style="display: none;">
+						<div class="status-content-before"><span id="node5"></span></div>
+						<div class="status-time-before"><span id="time5"></span></div>
+						<div class="status-line"></div>
+					</li>
+					<li id="show4" style="display: none;">
+						<div class="status-content-before"><span id="node4"></span></div>
+						<div class="status-time-before"><span id="time4"></span></div>
+						<div class="status-line"></div>
+					</li>
+        			<li id="show3"  style="display: none;">
+						<div class="status-content-before"><span id="node3"></span></div>
+						<div class="status-time-before"><span id="time3"></span></div>
+						<div class="status-line"></div>
+					</li>
+        			<li id="show2"  style="display: none;">
+						<div class="status-content-before"><span id="node2"></span></div>
+						<div class="status-time-before"><span id="time2"></span></div>
+						<div class="status-line"></div>
+					</li>
+					<li id="show1" style="display: none;">
+						<div class="status-content-before"><span id="node1"></span></div>
+						<div class="status-time-before"><span id="time1"></span></div>
+						<div class="status-line"></div>
+					</li >
+				</ul>
+			</div>
+	</div>	
 </div>
 
 

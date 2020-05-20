@@ -67,6 +67,26 @@
     		telCode=document.getElementById("telphone").value;
     		$.cookie('express_telCode', telCode,{ path: '/' });
     	}
+		function logout(){
+    		
+    		if($.cookie('client_name')==null){
+				alert("您未登录");		
+			}else{
+				var cookies = $.cookie();
+	    		for(var cookie in cookies) {
+	    			
+	    		   $.removeCookie(cookie,{path:"/"});
+	    		}
+	    		//$.removeCookie('client_name', { path:'/' });
+	
+	    		//$.cookie('client_name', null, { path: '/' });
+	
+	    		//$.removeCookie('client_name');
+	    		alert("已注销");
+	    		document.location.href="index.html";
+			}
+ 
+    	}
     </script>
 </head>
 <body>
@@ -109,8 +129,8 @@
 									<li><a href="expresssendlist.html">我的寄件</a></li>
 									<li><a href="expressreceivelist.html">我的收件</a></li>
 									<li><a href="addresslist.html">我的地址簿</a></li>
-									<li><a href="#">修改信息</a></li>
-									<li><a href="#">退出登录</a></li>
+									<li><a href="modify.html">修改信息</a></li>
+									<li><a href="#" onclick="logout();">退出登录</a></li>
 								</ul></li>
 						</ul>
 
@@ -129,7 +149,7 @@
             </p>
             <div class="form-group">
                 <label for="telphone" class="col-form-label">手机号</label>
-                <input type="text" class="form-control" placeholder="手机号" name="telphone" id="telphone">
+                <input type="tel" class="form-control" placeholder="手机号" name="telphone" id="telphone" required="required">
 			</div>
             <div class="right-w3l">
                 <input type="submit" class="form-control " value="立即查询" style="background-color: #d1c286">

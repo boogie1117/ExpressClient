@@ -24,6 +24,41 @@
     <title>城市列表控件</title>
     	<script src="//libs.baidu.com/jquery/1.9.0/jquery.js"></script>
 	<script async src="http://c.cnzz.com/core.php"></script>
+<script type="text/javascript" src="lib/jquery/jquery.min.js"></script>	
+	<script type="text/javascript">
+	var data_info = new Array();
+	$(document).ready(function requestData(){
+	
+	    $.ajax({
+	        url: "http://39.99.212.164:8080/TestCxfHibernate/REST/Misc/getClientNodeList",
+	        type: "get",
+	        dataType: "json",
+	        success: function(data){
+	        	//alert("得到数据啦");
+	            showData(data);
+	        },
+	        error: function(msg){
+	            alert("ajax连接异常："+msg);
+	        }
+	    });
+	});
+
+
+	//把ajax传过来的数据展示出来
+	function showData(data) {
+		//alert("+++");
+		var i;
+	    for(i=0;i<data.length;i++){        
+	    	data_info[i] = new Array();
+	    	data_info[i][0] = data[i].x;
+	    	data_info[i][1] = data[i].y;
+	    	data_info[i][2] = "收发中心: "+data[i].nodeName+"<br>联系方式:"+data[i].telCode;   	
+	   
+	    }
+	   // alert(data_info[0][0]);
+	}
+
+	</script>
 </head>
 <body>
     <div id="allmap"></div>
@@ -46,74 +81,14 @@
 	var size = new BMap.Size(10, 20);
 	mp.addControl(new BMap.CityListControl({
 	    anchor: BMAP_ANCHOR_TOP_LEFT,
-	    offset: size,
-	    // 切换城市之前事件
-	    // onChangeBefore: function(){
-	    //    alert('before');
-	    // },
-	    // 切换城市之后事件
-	    // onChangeAfter:function(){
-	    //   alert('after');
-	    // }
+	    offset: size
 	}));
-/*function show(){
-	//添加网点
-	var icon = new BMap.Icon('images/logo.png', new BMap.Size(40, 64), {
-	    anchor: new BMap.Size(20, 34)
-	});
-	
-	var mkr =new BMap.Marker(new BMap.Point(113.69857,34.73569), {
-	    icon: icon
-	});
-	mp.addOverlay(mkr);
-	//添加网点
-	var icon = new BMap.Icon('images/logo.png', new BMap.Size(40, 64), {
-	    anchor: new BMap.Size(20, 34)
-	});
-	
-	var mkr =new BMap.Marker(new BMap.Point(113.63145,34.74324), {
-	    icon: icon
-	});
-	mp.addOverlay(mkr);
-	//添加网点
-	var icon = new BMap.Icon('images/logo.png', new BMap.Size(40, 64), {
-	    anchor: new BMap.Size(20, 34)
-	});
-	
-	var mkr =new BMap.Marker(new BMap.Point(112.47241,34.55648), {
-	    icon: icon
-	});
-	mp.addOverlay(mkr);
-	//添加网点
-	var icon = new BMap.Icon('images/logo.png', new BMap.Size(40, 64), {
-	    anchor: new BMap.Size(20, 34)
-	});
-	
-	var mkr =new BMap.Marker(new BMap.Point(112.46697,34.65682), {
-	    icon: icon
-	});
-	mp.addOverlay(mkr);
-	//添加网点
-	var icon = new BMap.Icon('images/logo.png', new BMap.Size(40, 64), {
-	    anchor: new BMap.Size(20, 34)
-	});
-	
-	var mkr =new BMap.Marker(new BMap.Point(116.32128,39.89534), {
-	    icon: icon
-	});
-	mp.addOverlay(mkr);
-}*/
-		var data_info = [[113.69857,34.73569,"地址：网点1"],
-			 [113.63145,34.74324,"地址：网点2"],
-			 [112.47241,34.55648,"地址：网点3"],
-			 [112.46697,34.65682,"地址：网点4"],
-			 [116.32128,39.89534,"地址：网点5"],
-			 [116.412222,39.912345,"地址：网点6"]
-			];
+
+		
 		var opts = {
 			width : 250,     // 信息窗口宽度
 			height: 80,     // 信息窗口高度
-			title : "信息窗口" , // 信息窗口标题
+			title : "网点信息" , // 信息窗口标题
 			enableMessage:true//设置允许信息窗发送短息
 		  };
 		

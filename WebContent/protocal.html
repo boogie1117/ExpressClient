@@ -64,6 +64,26 @@
     	function back(){
     		window.history.back(-1);
     	}
+		function logout(){
+    		
+    		if($.cookie('client_name')==null){
+				alert("您未登录");		
+			}else{
+				var cookies = $.cookie();
+	    		for(var cookie in cookies) {
+	    			
+	    		   $.removeCookie(cookie,{path:"/"});
+	    		}
+	    		//$.removeCookie('client_name', { path:'/' });
+	
+	    		//$.cookie('client_name', null, { path: '/' });
+	
+	    		//$.removeCookie('client_name');
+	    		alert("已注销");
+	    		document.location.href="index.html";
+			}
+ 
+    	}
     </script>
 </head>
 
@@ -101,8 +121,8 @@
 									<li><a href="expresssendlist.html">我的寄件</a></li>
 									<li><a href="expressreceivelist.html">我的收件</a></li>
 									<li><a href="addresslist.html">我的地址簿</a></li>
-									<li><a href="#">修改信息</a></li>
-									<li><a href="#">退出登录</a></li>
+									<li><a href="modify.html">修改信息</a></li>
+									<li><a href="#" onclick="logout();">退出登录</a></li>
 								</ul></li>
 								 <li class="ml-xl-5 ml-lg-2 mt-lg-0 mt-sm-4 mt-3">
                            	<a href="#" onclick="back()">返回</a>

@@ -89,20 +89,65 @@
 			// $("#center").html("+++");
 	        var str = "";//定义用于拼接的字符串
 	        for (var i = 0; i < data.length; i++) {
-	        	//alert("+++");
-	            //拼接表格的行和列
-	            //str = "<tr><td>" + 0 + "</td><td>" + 0 + "</td><td>" + 0 +"</td><td>" +  0 +"</td></tr>";
-	            str = "<tr><td>" + data[i].id + 
+	        	 var status;
+	            switch(data[i].status){
+		            case 0:status="未上门取件";break;
+		            case 1:status="已分派";break;
+		            case 2:status="已取件";break;
+		            case 3:status="已生成订单，待支付";break;
+		            case 4:status="已支付，可在我的快递中查看";break;
+		            default :status="未上门取件";
+	            }
+	            var table = document.getElementById("test1");    
+	            oneRow = table.insertRow();//插入一行  
+	            cell1= oneRow.insertCell();//单单插入一行是不管用的，需要插入单元格  
+	            cell2=oneRow.insertCell();  
+	            cell3=oneRow.insertCell();  
+	            cell4=oneRow.insertCell();  
+	            cell5=oneRow.insertCell();  
+	            cell6=oneRow.insertCell();  
+	            cell1.innerHTML =data[i].id;   
+	            cell2.innerHTML=data[i].sender.name+data[i].sender.telCode; 
+	            cell3.innerHTML= data[i].recever.name+data[i].recever.telCode; 
+	            cell4.innerHTML= data[i].address;
+	            cell5.innerHTML= data[i].time;
+	            
+	            if(data[i].status==3){
+	            	cell6.innerHTML="<a href='alipay.trade.page.pay.jsp?appointmentid="+data[i].id+"'>已生成订单，待支付</a>";
+	            	
+	            }else{
+		            cell6.innerHTML=status; 
+	            }
+	           /* str = "<tr><td>" + data[i].id + 
 	            "</td><td>" + data[i].sender.name+data[i].sender.telCode +
 	            "</td><td>" + data[i].recever.name+data[i].recever.telCode +
-	            "</td><td>" +  data[i].status +
+	            "</td><td>" +  status +
 	            "</td></tr>";
 	            //追加到table中
-	            $("#appointmentlist").append(str);         
+	            $("#appointmentlist").append(str);         */
 	           
 	        }
 	    }
-	
+	function logout(){
+		
+		if($.cookie('client_name')==null){
+			alert("您未登录");		
+		}else{
+			var cookies = $.cookie();
+    		for(var cookie in cookies) {
+    			
+    		   $.removeCookie(cookie,{path:"/"});
+    		}
+    		//$.removeCookie('client_name', { path:'/' });
+
+    		//$.cookie('client_name', null, { path: '/' });
+
+    		//$.removeCookie('client_name');
+    		alert("已注销");
+    		document.location.href="index.html";
+		}
+
+	}
 	</script>
 
 </head>
@@ -124,9 +169,9 @@
                             <a href="index.html">首页</a>
                         </li>
                         <li class="has-dropdown">
-                            <a href="transNodeQuery.html">订单查询</a>
+                            <a href="ExpressSheetQueryById.html">订单查询</a>
                             <ul class="dropdown">
-                                <li><a href="ExpressSheetQueryById.html">手机号查询订单</a></li>
+                                <li><a href="ExpressSheetQueryBytel.html">手机号查询订单</a></li>
                                 <li><a href="ExpressSheetQueryById.html">订单号查询订单</a></li>
                             </ul>
                         </li>
@@ -146,8 +191,8 @@
 									<li><a href="expresssendlist.html">我的寄件</a></li>
 									<li><a href="expressreceivelist.html">我的收件</a></li>
 									<li><a href="addresslist.html">我的地址簿</a></li>
-									<li><a href="#">修改信息</a></li>
-									<li><a href="#">退出登录</a></li>
+									<li><a href="modify.html">修改信息</a></li>
+									<li><a href="#" onclick="logout();">退出登录</a></li>
 								</ul></li>
 						</ul>
 
@@ -174,25 +219,24 @@
 		      <table id="appointmentlist" class="cloudTable"  style="table-layout:fixed">
 		        <colgroup>
 	 				<col width="60px">
-			        <col width="250px">
-			        <col width="250px">
-			        <col width="90px">
+			        <col width="230px">
+			        <col width="230px">
+			        <col width="150px">
+			        <col width="60px">
+			        <col width="150px">
 		        </colgroup>
 		        <thead class="cloudTable_header">
 		        <tr>
 		          <th style="text-align:center;">预约单号</th>
 		          <th style="text-align:center;">收件人信息</th>
 		          <th style="text-align:center;">寄件人信息</th>
+		          <th style="text-align:center;">取件地址</th>
+		          <th style="text-align:center;">取件时间</th>
 		          <th style="text-align:center;">预约状态</th>
 		        </tr>
 		      </thead>
-		        <tbody class="cloudTable_body ">
-		         <!--   <tr>
-		            <td><span id="expressId"></span></td>
-		            <td><span id="sender"></span></td>
-		            <td><span id="receiver"></span></td>
-		            <td><span id="status"></span></td>
-		          </tr>-->
+		        <tbody class="cloudTable_body " id="test1">
+		         
 		          
 		
 		        </tbody>
